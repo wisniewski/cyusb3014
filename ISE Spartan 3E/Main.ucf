@@ -1,0 +1,36 @@
+
+# PlanAhead Generated physical constraints 
+
+NET "db[0]" LOC = R15;
+NET "db[1]" LOC = R16;
+NET "db[2]" LOC = P17;
+NET "db[3]" LOC = M15;
+NET "enabled" LOC = M18;
+NET "mclock" LOC = C9;
+NET "reset" LOC = K17;
+NET "rs" LOC = L18;
+NET "rw" LOC = L17;
+NET "strataflash_disable" LOC = D16;
+
+# PlanAhead Generated IO constraints 
+
+NET "db[0]" IOSTANDARD = LVCMOS33;
+NET "db[1]" IOSTANDARD = LVCMOS33;
+NET "db[2]" IOSTANDARD = LVCMOS33;
+NET "db[3]" IOSTANDARD = LVCMOS33;
+NET "enabled" IOSTANDARD = LVCMOS33;
+NET "mclock" IOSTANDARD = LVCMOS33;
+NET "reset" IOSTANDARD = LVCMOS33;
+NET "rs" IOSTANDARD = LVCMOS33;
+NET "rw" IOSTANDARD = LVCMOS33;
+NET "strataflash_disable" IOSTANDARD = LVCMOS33;
+NET "db[0]" DRIVE = 4;
+NET "db[1]" DRIVE = 4;
+NET "db[2]" DRIVE = 4;
+NET "db[3]" DRIVE = 4;
+NET "enabled" DRIVE = 4;
+NET "mclock" DRIVE = 4;
+NET "reset" DRIVE = 4;
+NET "rs" DRIVE = 4;
+NET "rw" DRIVE = 4;
+NET "strataflash_disable" DRIVE = 4;
