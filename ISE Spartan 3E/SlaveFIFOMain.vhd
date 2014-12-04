@@ -113,7 +113,7 @@ Inst_clock_dcm : clock_dcm PORT MAP
 ----------------------------------------------------------------------------------
 -- LCD Controller Port Map
 ----------------------------------------------------------------------------------
-lcd : lcd_controller port map
+Inst_lcd_controller : lcd_controller PORT MAP
 (
     clock50 => clock50,
     reset_fpga => reset_fpga,
