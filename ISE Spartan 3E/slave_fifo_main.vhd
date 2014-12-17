@@ -8,13 +8,13 @@ use ieee.std_logic_unsigned.all;
 ----------------------------------------------------------------------------------
 -- Entity
 ----------------------------------------------------------------------------------
-entity slave_fifo_main is
-port(
+entity slave_fifo_main is port
+(
 	clock50 : in std_logic;
-	reset : in std_logic;
 
-	buttons : in std_logic_vector(2 downto 0):="000";
-    leds : out std_logic_vector(2 downto 0):="000";
+	slide_reset : in std_logic;
+	slide_select_mode : in std_logic_vector(2 downto 0):="000";
+    leds_show_mode : out std_logic_vector(2 downto 0):="000";
 
 	lcd_e : out std_logic;
 	lcd_rs : out std_logic;
@@ -47,7 +47,7 @@ constant MASTER_IDLE : std_logic_vector(2 downto 0):="111";
 constant LOOPBACK : std_logic_vector(2 downto 0):="001";
 constant STREAM_OUT : std_logic_vector(2 downto 0):="010";
 constant STREAM_IN : std_logic_vector(2 downto 0):="100";
-constant RESET_MODE : std_logic_vector(2 downto 0):="100";
+constant RESET_MODE : std_logic_vector(2 downto 0):="101";
 ----------------------------------------------------------------------------------
 -- Signals
 ----------------------------------------------------------------------------------
@@ -66,10 +66,25 @@ type lcd_states is
 	send2
 );
 signal lcd_current_state : lcd_states := start;
+
+signal clock100 : std_logic;
+signal lcd_clock50 : std_logic;
+signal reset_dcm : std_logic:='0';
+signal reset_fpga : std_logic:='0';
+signal locked : std_logic:='0';
 ----------------------------------------------------------------------------------
 -- Components
 ----------------------------------------------------------------------------------
-component lcd_controller port 
+component slave_fifo_dcm port
+(
+	CLKIN_IN : IN std_logic;
+	RST_IN : IN std_logic;          
+	CLKIN_IBUFG_OUT : OUT std_logic;
+	CLK0_OUT : OUT std_logic;
+	CLK2X_OUT : OUT std_logic;
+	LOCKED_OUT : OUT std_logic
+); end component;
+component lcd_controller port
 (
 	clock50 : in std_logic;
 	reset : in std_logic;
@@ -90,12 +105,24 @@ component lcd_controller port
 ----------------------------------------------------------------------------------	
 begin
 ----------------------------------------------------------------------------------
+-- Digital Clock Manager Port Map
+----------------------------------------------------------------------------------
+Inst_slave_fifo_dcm: slave_fifo_dcm PORT MAP
+(
+	CLKIN_IN => clock50,
+	RST_IN => '0',
+	CLKIN_IBUFG_OUT => open,
+	CLK0_OUT => lcd_clock50,
+	CLK2X_OUT => clock100,
+	LOCKED_OUT => locked
+);
+----------------------------------------------------------------------------------
 -- LCD Controller Port Map
 ----------------------------------------------------------------------------------	
 inst_lcd_controller : lcd_controller port map
 (
-	clock50 => clock50,
-	reset => reset,
+	clock50 => lcd_clock50,
+	reset => '0',
 	lcd_e => lcd_e,
 	lcd_rs => lcd_rs,
 	lcd_rw => lcd_rw,
@@ -112,31 +139,34 @@ inst_lcd_controller : lcd_controller port map
 -- Signals
 ----------------------------------------------------------------------------------
 lcd_srataflash_disable <= '1';
+reset_fpga <= slide_reset;
 ----------------------------------------------------------------------------------
 -- FPGA Master-Mode Change State and Select Mode from Slide Switches
 ----------------------------------------------------------------------------------
-process (clock50, reset) begin
-    if (reset='1')  then
+process (clock100, reset_fpga) begin
+    if (reset_fpga = '1')  then
         current_state <= idle_state;
         current_mode <= MASTER_IDLE;
-        leds <= RESET_MODE;
-    elsif (rising_edge(clock50)) then
+        leds_show_mode <= RESET_MODE;
+		text_line1 <= "FSM FPGA";
+		text_line2 <= "MODE: RESET     ";
+    elsif (rising_edge(clock100)) then
     	text_line1 <= "FSM FPGA";
         current_state <= next_state;
-        current_mode <= buttons;
+        current_mode <= slide_select_mode;
 
         case current_state is
             when loopback_state => 
-            	leds <= LOOPBACK;
+            	leds_show_mode <= LOOPBACK;
             	text_line2 <= "MODE: LOOPBACK  ";
             when stream_out_state => 
-	            leds <= STREAM_OUT; 
+	            leds_show_mode <= STREAM_OUT; 
 	            text_line2 <= "MODE: STREAM OUT";
             when stream_in_state => 
-	            leds <= STREAM_IN; 
+	            leds_show_mode <= STREAM_IN; 
 	            text_line2 <= "MODE: STREAM IN ";
             when others => 
-	            leds <= MASTER_IDLE; 
+	            leds_show_mode <= MASTER_IDLE; 
 	            text_line2 <= "MODE: IDLE STATE"; 
         end case;
     end if;
@@ -177,14 +207,11 @@ end process;
 ----------------------------------------------------------------------------------
 -- LCD Main Process
 ----------------------------------------------------------------------------------
-process(reset, clock50, request_served)
+process(lcd_clock50, request_served)
 	variable counter : integer range 0 to 50000000 := 1;
 	variable letter_index : integer := 0;
 begin
-	if reset = '1' then
-		counter := 1;
-		lcd_current_state <= start;
-	elsif rising_edge(clock50) then
+	if rising_edge(lcd_clock50) then
 		case lcd_current_state is
 			when idle =>
 				lcd_current_state <= start;
