@@ -10,17 +10,36 @@ use ieee.std_logic_unsigned.all;
 ----------------------------------------------------------------------------------
 entity slave_fifo_main is port
 (
-	clock50 : in std_logic;
+	clock50 : in std_logic; -- input 50 MHz onboard clock
+	clock100_out : out std_logic; -- output 100 MHz clock to FX3 (PCLK)
 
-	slide_reset : in std_logic;
-	slide_select_mode : in std_logic_vector(2 downto 0):="000";
-    leds_show_mode : out std_logic_vector(2 downto 0):="000";
+	reset_from_slide : in std_logic;
+	reset_from_fx3 : in std_logic; -- input reset FIFO from FX3 (INT_N_CTL15)
+	reset_to_fx3 : out std_logic; -- RESET
+	
+	slide_select_mode : in std_logic_vector(2 downto 0):="000"; -- select mode (idle, stream, loop)
+    leds_show_mode : out std_logic:='0'; -- show mode on leds
 
-	lcd_e : out std_logic;
-	lcd_rs : out std_logic;
+    address : out std_logic_vector(1 downto 0):="00"; -- 2-bit address bus (A)
+	data : inout std_logic_vector(15 downto 0):="0000000000000000"; -- 16-bit data bus (DQ)
+	pktend : out std_logic;
+	pmode : out std_logic_vector(1 downto 0);
+
+	slcs : out std_logic; -- chip select
+	slwr : out std_logic; -- write strobe
+	slrd : out std_logic; -- read strobe
+	sloe : out std_logic; -- output enable
+
+	flaga : in std_logic; -- write
+	flagb : in std_logic; -- write
+	flagc : in std_logic; -- read
+	flagd : in std_logic; -- read
+	
+	lcd_e : out std_logic; -- lcd enable
+	lcd_rs : out std_logic; 
 	lcd_rw : out std_logic;
-	lcd_data : out std_logic_vector(3 downto 0);
-	lcd_srataflash_disable : out std_logic
+	lcd_data : out std_logic_vector(3 downto 0); -- lcd 4-bit bus
+	lcd_srataflash_disable : out std_logic -- disable useless feature
 );
 end slave_fifo_main;
 ----------------------------------------------------------------------------------
@@ -49,7 +68,7 @@ constant STREAM_OUT : std_logic_vector(2 downto 0):="010";
 constant STREAM_IN : std_logic_vector(2 downto 0):="100";
 constant RESET_MODE : std_logic_vector(2 downto 0):="101";
 ----------------------------------------------------------------------------------
--- Signals
+-- LCD Signals
 ----------------------------------------------------------------------------------
 signal text_line1 : string(1 to 8);
 signal text_line2 : string(1 to 16);
@@ -66,12 +85,21 @@ type lcd_states is
 	send2
 );
 signal lcd_current_state : lcd_states := start;
-
+----------------------------------------------------------------------------------
+-- General Signals
+----------------------------------------------------------------------------------
 signal clock100 : std_logic;
 signal lcd_clock50 : std_logic;
 signal reset_dcm : std_logic:='0';
 signal reset_fpga : std_logic:='0';
 signal locked : std_logic:='0';
+signal data_get : std_logic_vector(15 downto 0);
+----------------------------------------------------------------------------------
+-- Stream In Signals
+----------------------------------------------------------------------------------
+signal stream_in_mode_active: std_logic;
+signal data_stream_in : std_logic_vector(15 downto 0);
+signal slwr_stream_in: std_logic;
 ----------------------------------------------------------------------------------
 -- Components
 ----------------------------------------------------------------------------------
@@ -100,14 +128,24 @@ component lcd_controller port
 	request_served : out std_logic;
 	display_ready : buffer std_logic
 ); end component;
+component stream_in port 
+(
+	clock100 : in std_logic;
+	flaga_d : in std_logic;
+	flagb_d : in std_logic;
+	reset : in std_logic;
+	stream_in_mode_active : in std_logic;
+	slwr_stream_in : out std_logic;
+	data_stream_in : out std_logic_vector(15 downto 0)
+); end component;
 ----------------------------------------------------------------------------------
 -- Main code begin
 ----------------------------------------------------------------------------------	
 begin
 ----------------------------------------------------------------------------------
--- Digital Clock Manager Port Map
+-- Port Maps
 ----------------------------------------------------------------------------------
-Inst_slave_fifo_dcm: slave_fifo_dcm PORT MAP
+inst_slave_fifo_dcm : slave_fifo_dcm port map
 (
 	CLKIN_IN => clock50,
 	RST_IN => '0',
@@ -116,9 +154,6 @@ Inst_slave_fifo_dcm: slave_fifo_dcm PORT MAP
 	CLK2X_OUT => clock100,
 	LOCKED_OUT => locked
 );
-----------------------------------------------------------------------------------
--- LCD Controller Port Map
-----------------------------------------------------------------------------------	
 inst_lcd_controller : lcd_controller port map
 (
 	clock50 => lcd_clock50,
@@ -135,11 +170,57 @@ inst_lcd_controller : lcd_controller port map
 	request_served => request_served,
 	display_ready => display_ready
 );
+inst_stream_in : stream_in port map
+(
+	clock100 => clock100,
+	flaga_d => flaga,
+	flagb_d => flagb,
+	reset => not reset_fpga,
+	stream_in_mode_active => ,
+	slwr_stream_in => slwr_stream_in,
+	data_stream_in => data_stream_in
+);
 ----------------------------------------------------------------------------------
--- Signals
+-- General Signals
 ----------------------------------------------------------------------------------
+clock100_out <= clock100;
+reset_fpga <= reset_from_slide;
 lcd_srataflash_disable <= '1';
-reset_fpga <= slide_reset;
+
+data <= data_get; 
+reset_to_fx3 <= '0';
+address <= "00"; 
+pktend <= '0';
+pmode <= "00";
+slcs <= '0';
+slwr <= '0';
+slrd <= '0';
+sloe <= '0';
+----------------------------------------------------------------------------------
+-- FPGA Data Switch
+----------------------------------------------------------------------------------
+process (current_state) begin
+    case current_state is
+        when loopback_state => 
+            data_get <= (others => '0');
+        when stream_out_state => 
+            data_get <= (others => '0');
+        when stream_in_state => 
+            data_get <= data_stream_in;
+        when others => 
+            data_get <= (others => '0');
+    end case;
+end process;
+----------------------------------------------------------------------------------
+-- Mode Active
+----------------------------------------------------------------------------------
+process (current_state) begin
+	if current_state = stream_in then
+		stream_in_mode_active <= '1';
+	else 
+		stream_in_mode_active <= '0';
+	end if;
+end process;
 ----------------------------------------------------------------------------------
 -- FPGA Master-Mode Change State and Select Mode from Slide Switches
 ----------------------------------------------------------------------------------
@@ -147,7 +228,7 @@ process (clock100, reset_fpga) begin
     if (reset_fpga = '1')  then
         current_state <= idle_state;
         current_mode <= MASTER_IDLE;
-        leds_show_mode <= RESET_MODE;
+        leds_show_mode <= '1';
 		text_line1 <= "FSM FPGA";
 		text_line2 <= "MODE: RESET     ";
     elsif (rising_edge(clock100)) then
@@ -157,16 +238,16 @@ process (clock100, reset_fpga) begin
 
         case current_state is
             when loopback_state => 
-            	leds_show_mode <= LOOPBACK;
+            	leds_show_mode <= '0';
             	text_line2 <= "MODE: LOOPBACK  ";
             when stream_out_state => 
-	            leds_show_mode <= STREAM_OUT; 
+	            leds_show_mode <= '0'; 
 	            text_line2 <= "MODE: STREAM OUT";
             when stream_in_state => 
-	            leds_show_mode <= STREAM_IN; 
+	            leds_show_mode <= '1'; 
 	            text_line2 <= "MODE: STREAM IN ";
             when others => 
-	            leds_show_mode <= MASTER_IDLE; 
+	            leds_show_mode <= '0'; 
 	            text_line2 <= "MODE: IDLE STATE"; 
         end case;
     end if;
