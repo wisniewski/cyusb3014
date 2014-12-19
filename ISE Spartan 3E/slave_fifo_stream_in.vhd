@@ -9,7 +9,7 @@ use ieee.std_logic_unsigned.all;
 ----------------------------------------------------------------------------------
 -- Entity
 ----------------------------------------------------------------------------------
-entity stream_in is port 
+entity slave_fifo_stream_in is port 
 (
 	clock100 				: in std_logic;
 	flaga_d 				: in std_logic;
@@ -19,11 +19,11 @@ entity stream_in is port
 	slwr_stream_in 			: out std_logic;
 	data_stream_in 	: out std_logic_vector(15 downto 0)
 );
-end stream_in;
+end slave_fifo_stream_in;
 ----------------------------------------------------------------------------------
 -- Architecture
 ----------------------------------------------------------------------------------
-architecture stream_in_arch of stream_in is
+architecture stream_in_arch of slave_fifo_stream_in is
 ----------------------------------------------------------------------------------
 -- Constants
 ----------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ process(clock100, reset) begin
 		data_stream_in_n <= (others => '0');
 	elsif rising_edge(clock100) then
 		if (stream_in_mode_active = '1') and (slwr_stream_in_n = '0') then
-			data_stream_in_n <= data_stream_in_n + '1';
+			data_stream_in_n <= "0101011101001101";--data_stream_in_n + '1';
 		else 
 			data_stream_in_n <= (others => '0');
 		end if;

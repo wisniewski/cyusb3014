@@ -94,6 +94,14 @@ signal reset_dcm : std_logic:='0';
 signal reset_fpga : std_logic:='0';
 signal locked : std_logic:='0';
 signal data_get : std_logic_vector(15 downto 0);
+signal address_get : std_logic_vector(1 downto 0);
+signal pktend_get : std_logic;
+signal slwr_get : std_logic;
+signal sloe_get : std_logic;
+signal slrd_get : std_logic;
+signal slcs_get : std_logic;
+signal flaga_get : std_logic;
+signal flagb_get : std_logic;
 ----------------------------------------------------------------------------------
 -- Stream In Signals
 ----------------------------------------------------------------------------------
@@ -128,7 +136,7 @@ component lcd_controller port
 	request_served : out std_logic;
 	display_ready : buffer std_logic
 ); end component;
-component stream_in port 
+component slave_fifo_stream_in port 
 (
 	clock100 : in std_logic;
 	flaga_d : in std_logic;
@@ -170,13 +178,13 @@ inst_lcd_controller : lcd_controller port map
 	request_served => request_served,
 	display_ready => display_ready
 );
-inst_stream_in : stream_in port map
+inst_stream_in : slave_fifo_stream_in port map
 (
 	clock100 => clock100,
-	flaga_d => flaga,
-	flagb_d => flagb,
+	flaga_d => flaga_get,
+	flagb_d => flagb_get,
 	reset => not reset_fpga,
-	stream_in_mode_active => ,
+	stream_in_mode_active => stream_in_mode_active,
 	slwr_stream_in => slwr_stream_in,
 	data_stream_in => data_stream_in
 );
@@ -187,17 +195,52 @@ clock100_out <= clock100;
 reset_fpga <= reset_from_slide;
 lcd_srataflash_disable <= '1';
 
-data <= data_get; 
-reset_to_fx3 <= '0';
-address <= "00"; 
-pktend <= '0';
-pmode <= "00";
-slcs <= '0';
-slwr <= '0';
-slrd <= '0';
-sloe <= '0';
+ 
+reset_to_fx3 <= '1';
+address <= address_get; 
+
+pmode <= "11";
+slcs <= slcs_get;
+slrd <= slrd_get;
+sloe <= sloe_get;
+
+leds_show_mode <= stream_in_mode_active;
 ----------------------------------------------------------------------------------
--- FPGA Data Switch
+-- Get flags - good
+----------------------------------------------------------------------------------
+process (reset_fpga, clock100) begin
+	if reset_fpga = '1' then
+		flaga_get <= '0';
+		flagb_get <= '0';
+    elsif (rising_edge(clock100)) then
+    	flaga_get <= flaga;
+    	flagb_get <= flagb;
+    end if;
+end process;
+----------------------------------------------------------------------------------
+-- Chip select - good
+----------------------------------------------------------------------------------
+process (current_state) begin
+	if current_state = idle_state then
+		slcs_get <= '1';
+    else 
+    	slcs_get <= '0';
+    end if;
+end process;
+----------------------------------------------------------------------------------
+-- FPGA Data Send/Get - good
+----------------------------------------------------------------------------------
+process (current_state) begin
+	if reset_fpga = '1' then
+		data <= (others => '0');
+    elsif (rising_edge(clock100)) then
+    	data <= data_get;
+    	pktend <= pktend_get;
+    	slwr <= slwr_get;
+    end if;
+end process;
+----------------------------------------------------------------------------------
+-- FPGA Data Switch - good
 ----------------------------------------------------------------------------------
 process (current_state) begin
     case current_state is
@@ -212,13 +255,31 @@ process (current_state) begin
     end case;
 end process;
 ----------------------------------------------------------------------------------
--- Mode Active
+-- Stream In Mode Active - good
 ----------------------------------------------------------------------------------
 process (current_state) begin
-	if current_state = stream_in then
+	if current_state = stream_in_state then
 		stream_in_mode_active <= '1';
 	else 
 		stream_in_mode_active <= '0';
+	end if;
+end process;
+----------------------------------------------------------------------------------
+-- Stream In Mode Active
+----------------------------------------------------------------------------------
+process (current_state) begin
+	if current_state = stream_in_state then
+		sloe_get <= '1';
+		slrd_get <= '1';
+		slwr_get <= slwr_stream_in;
+		address_get <= "00";
+		pktend_get <= '1';
+	else 
+		sloe_get <= '1';
+		slrd_get <= '1';
+		slwr_get <= '1';
+		address_get <= "11";
+		pktend_get <= '1';
 	end if;
 end process;
 ----------------------------------------------------------------------------------
@@ -228,7 +289,7 @@ process (clock100, reset_fpga) begin
     if (reset_fpga = '1')  then
         current_state <= idle_state;
         current_mode <= MASTER_IDLE;
-        leds_show_mode <= '1';
+        --leds_show_mode <= '1';
 		text_line1 <= "FSM FPGA";
 		text_line2 <= "MODE: RESET     ";
     elsif (rising_edge(clock100)) then
@@ -238,16 +299,16 @@ process (clock100, reset_fpga) begin
 
         case current_state is
             when loopback_state => 
-            	leds_show_mode <= '0';
+            	--leds_show_mode <= '0';
             	text_line2 <= "MODE: LOOPBACK  ";
             when stream_out_state => 
-	            leds_show_mode <= '0'; 
+	            --leds_show_mode <= '0'; 
 	            text_line2 <= "MODE: STREAM OUT";
             when stream_in_state => 
-	            leds_show_mode <= '1'; 
+	            --leds_show_mode <= '1'; 
 	            text_line2 <= "MODE: STREAM IN ";
             when others => 
-	            leds_show_mode <= '0'; 
+	           -- leds_show_mode <= '0'; 
 	            text_line2 <= "MODE: IDLE STATE"; 
         end case;
     end if;
