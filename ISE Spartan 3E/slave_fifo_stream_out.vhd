@@ -9,28 +9,23 @@ use ieee.std_logic_unsigned.all;
 ----------------------------------------------------------------------------------
 -- Entity
 ----------------------------------------------------------------------------------
-entity stream_out is
-generic 
-(
-	data_bit 					: natural := 16
-);
-port 
+entity slave_fifo_stream_out is port 
 (
 	clock100 					: in std_logic;
-	flagc_d 					: in std_logic;
-	flagd_d 					: in std_logic;
+	flagc_get 					: in std_logic;
+	flagd_get 					: in std_logic;
 	reset 						: in std_logic;
 	stream_out_mode_active 		: in std_logic;
-	data_stream_out_from_fx3	: in std_logic_vector(data_bit-1 downto 0);
+	data_stream_out	: in std_logic_vector(15 downto 0);
 	sloe_stream_out 			: out std_logic;
-	slrd_stream_out 			: out std_logic
-	
+	slrd_stream_out 			: out std_logic;
+	data_stream_out_ok 			: out std_logic
 );
-end stream_out;
+end slave_fifo_stream_out;
 ----------------------------------------------------------------------------------
 -- Architecture
 ----------------------------------------------------------------------------------
-architecture stream_out_arch of stream_out is
+architecture stream_out_arch of slave_fifo_stream_out is
 ----------------------------------------------------------------------------------
 -- Constants
 ----------------------------------------------------------------------------------
@@ -41,7 +36,7 @@ constant CNT_BITS 					: natural := 2;
 ----------------------------------------------------------------------------------
 signal sloe_stream_out_n 			: std_logic:='1';
 signal slrd_stream_out_n 			: std_logic:='1';
-signal data_stream_out_from_fx3_n 	: std_logic_vector(DATA_BITS-1 downto 0):="0000000000000000";
+signal data_stream_out_from_fx3_n 	: std_logic_vector(DATA_BITS-1 downto 0):="1111111111111111";
 signal rd_oe_delay_cnt				: std_logic_vector(CNT_BITS-1 downto 0):="00";
 signal oe_delay_cnt					: std_logic_vector(CNT_BITS-1 downto 0):="00";
 ----------------------------------------------------------------------------------
@@ -59,7 +54,16 @@ begin
 ----------------------------------------------------------------------------------
 sloe_stream_out <= sloe_stream_out_n;
 slrd_stream_out <= slrd_stream_out_n;
-data_stream_out_from_fx3_n <= data_stream_out_from_fx3;
+data_stream_out_from_fx3_n <= data_stream_out;
+
+process (data_stream_out_from_fx3_n) begin
+	--if data_stream_out_from_fx3_n = "0101011101001101" then
+	if data_stream_out_from_fx3_n = "0000000000000000" then
+		data_stream_out_ok <= '1';
+	else 
+		data_stream_out_ok <= '0';
+	end if;
+end process;
 ----------------------------------------------------------------------------------
 -- Stream Out State Change
 ----------------------------------------------------------------------------------
@@ -125,10 +129,10 @@ end process;
 ----------------------------------------------------------------------------------
 -- Stream Out Main FSM
 ----------------------------------------------------------------------------------
-stream_out_main_fsm : process(current_state, flagc_d, flagd_d, stream_out_mode_active) begin
+stream_out_main_fsm : process(current_state, flagc_get, flagd_get, stream_out_mode_active) begin
 	case current_state is
 		when stream_out_idle =>
-			if (flagc_d = '1') and (stream_out_mode_active = '1') then
+			if (flagc_get = '1') and (stream_out_mode_active = '1') then
 				next_state <= stream_out_flagc_rcvd;
 			else 
 				next_state <= stream_out_idle;
@@ -138,14 +142,14 @@ stream_out_main_fsm : process(current_state, flagc_d, flagd_d, stream_out_mode_a
 			next_state <= stream_out_wait_flagd;
 
 		when stream_out_wait_flagd =>
-			if (flagc_d = '1') then
+			if (flagc_get = '1') then
 				next_state <= stream_out_read;
 			else 
 				next_state <= stream_out_wait_flagd;
 			end if;
 
 		when stream_out_read =>
-			if (flagc_d = '0') then
+			if (flagc_get = '0') then
 				next_state <= stream_out_read_rd_oe_delay;
 			else 
 				next_state <= stream_out_read;

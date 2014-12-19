@@ -12,8 +12,8 @@ use ieee.std_logic_unsigned.all;
 entity slave_fifo_stream_in is port 
 (
 	clock100 				: in std_logic;
-	flaga_d 				: in std_logic;
-	flagb_d 				: in std_logic;
+	flaga_get 				: in std_logic;
+	flagb_get 				: in std_logic;
 	reset 					: in std_logic;
 	stream_in_mode_active 	: in std_logic;
 	slwr_stream_in 			: out std_logic;
@@ -66,8 +66,8 @@ end process;
 ----------------------------------------------------------------------------------
 -- SLWR Signal Enable/Disable
 ----------------------------------------------------------------------------------
-process(current_state, flagb_d) begin
-	if (current_state = stream_in_write) and (flagb_d = '1') then
+process(current_state, flagb_get) begin
+	if (current_state = stream_in_write) and (flagb_get = '1') then
 		slwr_stream_in_n <= '0';
 	else 
 		slwr_stream_in_n <= '1';
@@ -90,25 +90,25 @@ end process;
 ----------------------------------------------------------------------------------
 -- Stream In Main FSM
 ----------------------------------------------------------------------------------
-process(current_state, flaga_d, flagb_d, stream_in_mode_active) begin
+process(current_state, flaga_get, flagb_get, stream_in_mode_active) begin
 	next_state <= current_state;
 	case current_state is
 		when stream_in_idle =>
-			if (flaga_d = '1') and (stream_in_mode_active = '1') then
+			if (flaga_get = '1') and (stream_in_mode_active = '1') then
 				next_state <= stream_in_wait_flagb;
 			else 
 				next_state <= stream_in_idle;
 			end if;
 
 		when stream_in_wait_flagb =>
-			if (flagb_d = '1') then
+			if (flagb_get = '1') then
 				next_state <= stream_in_write;
 			else 
 				next_state <= stream_in_wait_flagb;
 			end if;
 
 		when stream_in_write =>
-			if (flagb_d = '0') then
+			if (flagb_get = '0') then
 				next_state <= stream_in_wr_delay;
 			else 
 				next_state <= stream_in_write;
