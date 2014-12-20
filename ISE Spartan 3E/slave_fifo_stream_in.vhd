@@ -74,16 +74,16 @@ process(current_state, flagb_get) begin
 	end if;
 end process;
 ----------------------------------------------------------------------------------
--- Data Generator
+-- Data Generator: "MW" Ascii
 ---------------------------------------------------------------------------------
 process(clock100, reset) begin
 	if (reset = '0') then
 		data_stream_in_n <= (others => '0');
 	elsif rising_edge(clock100) then
 		if (stream_in_mode_active = '1') and (slwr_stream_in_n = '0') then
-			data_stream_in_n <= "0101011101001101";--data_stream_in_n + '1';
-		else 
-			data_stream_in_n <= (others => '0');
+				data_stream_in_n <= "0101011101001101"; --data_stream_in_n + '1'; 
+		--else 
+			--data_stream_in_n <= (others => '0');
 		end if;
 	end if;
 end process;
@@ -99,24 +99,20 @@ process(current_state, flaga_get, flagb_get, stream_in_mode_active) begin
 			else 
 				next_state <= stream_in_idle;
 			end if;
-
 		when stream_in_wait_flagb =>
 			if (flagb_get = '1') then
 				next_state <= stream_in_write;
 			else 
 				next_state <= stream_in_wait_flagb;
 			end if;
-
 		when stream_in_write =>
 			if (flagb_get = '0') then
 				next_state <= stream_in_wr_delay;
 			else 
 				next_state <= stream_in_write;
 			end if;
-
 		when stream_in_wr_delay =>
 			next_state <= stream_in_idle;
-
 		when others =>
 			next_state <= stream_in_idle;
 	end case;

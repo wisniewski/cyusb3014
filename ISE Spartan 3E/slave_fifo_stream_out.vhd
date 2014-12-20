@@ -18,8 +18,7 @@ entity slave_fifo_stream_out is port
 	stream_out_mode_active 		: in std_logic;
 	data_stream_out	: in std_logic_vector(15 downto 0);
 	sloe_stream_out 			: out std_logic;
-	slrd_stream_out 			: out std_logic;
-	data_stream_out_ok 			: out std_logic
+	slrd_stream_out 			: out std_logic
 );
 end slave_fifo_stream_out;
 ----------------------------------------------------------------------------------
@@ -55,19 +54,10 @@ begin
 sloe_stream_out <= sloe_stream_out_n;
 slrd_stream_out <= slrd_stream_out_n;
 data_stream_out_from_fx3_n <= data_stream_out;
-
-process (data_stream_out_from_fx3_n) begin
-	--if data_stream_out_from_fx3_n = "0101011101001101" then
-	if data_stream_out_from_fx3_n = "0000000000000000" then
-		data_stream_out_ok <= '1';
-	else 
-		data_stream_out_ok <= '0';
-	end if;
-end process;
 ----------------------------------------------------------------------------------
 -- Stream Out State Change
 ----------------------------------------------------------------------------------
-stream_out_fsm : process (clock100, reset) begin
+process (clock100, reset) begin
 	if (reset = '0') then
 		current_state <= stream_out_idle;
 	elsif (rising_edge(clock100)) then
@@ -77,7 +67,7 @@ end process;
 ----------------------------------------------------------------------------------
 -- SLOE Signal Enable/Disable
 ----------------------------------------------------------------------------------
-sloe_stream_out_enable : process(current_state) begin
+process(current_state) begin
 	if (current_state = stream_out_read) or (current_state = stream_out_read_rd_oe_delay) or (current_state = stream_out_read_oe_delay) then
 		sloe_stream_out_n <= '0';
 	else 
@@ -87,7 +77,7 @@ end process;
 ----------------------------------------------------------------------------------
 -- SLRD Signal Enable/Disable
 ----------------------------------------------------------------------------------
-slrd_stream_out_enable : process(current_state) begin
+process(current_state) begin
 	if (current_state = stream_out_read) or (current_state = stream_out_read_rd_oe_delay) then
 		slrd_stream_out_n <= '0';
 	else 
@@ -97,7 +87,7 @@ end process;
 ----------------------------------------------------------------------------------
 -- RD OE Delay Counter
 ----------------------------------------------------------------------------------
-rd_oe_delay_counter : process(clock100, reset) begin
+process(clock100, reset) begin
 	if (reset = '1') then
 		rd_oe_delay_cnt <= (others => '0');
 	elsif (rising_edge(clock100)) then
@@ -113,7 +103,7 @@ end process;
 ----------------------------------------------------------------------------------
 -- OE Delay Counter
 ----------------------------------------------------------------------------------
-oe_delay_counter : process(clock100, reset) begin
+process(clock100, reset) begin
 	if (reset = '1') then
 		oe_delay_cnt <= (others => '0');
 	elsif (rising_edge(clock100)) then
@@ -129,7 +119,7 @@ end process;
 ----------------------------------------------------------------------------------
 -- Stream Out Main FSM
 ----------------------------------------------------------------------------------
-stream_out_main_fsm : process(current_state, flagc_get, flagd_get, stream_out_mode_active) begin
+process(current_state, flagc_get, flagd_get, stream_out_mode_active) begin
 	case current_state is
 		when stream_out_idle =>
 			if (flagc_get = '1') and (stream_out_mode_active = '1') then
@@ -137,38 +127,32 @@ stream_out_main_fsm : process(current_state, flagc_get, flagd_get, stream_out_mo
 			else 
 				next_state <= stream_out_idle;
 			end if;
-
 		when stream_out_flagc_rcvd =>
 			next_state <= stream_out_wait_flagd;
-
 		when stream_out_wait_flagd =>
 			if (flagc_get = '1') then
 				next_state <= stream_out_read;
 			else 
 				next_state <= stream_out_wait_flagd;
 			end if;
-
 		when stream_out_read =>
 			if (flagc_get = '0') then
 				next_state <= stream_out_read_rd_oe_delay;
 			else 
 				next_state <= stream_out_read;
 			end if;
-
 		when stream_out_read_rd_oe_delay =>
 			if (rd_oe_delay_cnt = "00") then
 				next_state <= stream_out_read_oe_delay;
 			else 
 				next_state <= stream_out_read_rd_oe_delay;
 			end if;
-
 		when stream_out_read_oe_delay =>
 			if (oe_delay_cnt = "00") then
 				next_state <= stream_out_idle;
 			else 
 				next_state <= stream_out_read_oe_delay;
 			end if;
-
 		when others =>
 			next_state <= stream_out_idle;
 	end case;

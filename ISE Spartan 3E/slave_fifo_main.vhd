@@ -69,7 +69,7 @@ constant RESET_MODE : std_logic_vector(2 downto 0):="101";
 ----------------------------------------------------------------------------------
 -- LCD Signals
 ----------------------------------------------------------------------------------
-signal text_line1 : string(1 to 8);
+signal text_line1 : string(1 to 16);
 signal text_line2 : string(1 to 16);
 signal lcd_data_to_send, goto : std_logic_vector(7 downto 0);
 signal data_request, clear, goto_request, request_served, display_ready : std_logic;
@@ -167,39 +167,27 @@ component slave_fifo_stream_out port
 	stream_out_mode_active 		: in std_logic;
 	data_stream_out	: in std_logic_vector(15 downto 0);
 	sloe_stream_out 			: out std_logic;
-	slrd_stream_out 			: out std_logic;
-	data_stream_out_ok 			: out std_logic
+	slrd_stream_out 			: out std_logic
 ); end component;
+----------------------------------------------------------------------------------
+-- Function: Convert std logic to string
+----------------------------------------------------------------------------------	
+function vector_to_string (vector : std_logic_vector) return string is
+	variable i : integer range 0 to 15 := 0;
+	variable result : string (1 to 16);
+begin
+	for i in 0 to 15 loop
+		if vector(i) = '0' then
+			result(i+1) := '0';
+		else 
+			result(i+1) := '1';
+		end if;
+	end loop;
+	return result;
+end vector_to_string;
 ----------------------------------------------------------------------------------
 -- Main code begin
 ----------------------------------------------------------------------------------	
-function chr(sl: std_logic) return character is
-    variable c: character;
-    begin
-      case sl is
-         when 'U' => c:= 'U';
-         when 'X' => c:= 'X';
-         when '0' => c:= '0';
-         when '1' => c:= '1';
-         when 'Z' => c:= 'Z';
-         when 'W' => c:= 'W';
-         when 'L' => c:= 'L';
-         when 'H' => c:= 'H';
-         when '-' => c:= '-';
-      end case;
-    return c;
-   end chr;
-function str(slv: std_logic_vector) return string is
-     variable result : string (1 to slv'length);
-     variable r : integer;
-   begin
-     r := 1;
-     for i in slv'range loop
-        result(r) := chr(slv(i));
-        r := r + 1;
-     end loop;
-     return result;
-   end str;
 begin
 ----------------------------------------------------------------------------------
 -- Port Maps
@@ -248,8 +236,7 @@ int_stream_out : slave_fifo_stream_out port map
 	stream_out_mode_active => stream_out_mode_active,
 	data_stream_out => data_stream_out,
 	sloe_stream_out => sloe_stream_out,
-	slrd_stream_out => slrd_stream_out,
-	data_stream_out_ok => data_stream_out_ok
+	slrd_stream_out => slrd_stream_out
 );
 ----------------------------------------------------------------------------------
 -- General Signals
@@ -289,7 +276,7 @@ process (reset_fpga, clock100) begin
 		flagc_get <= '0';
 		flagd_get <= '0';
     elsif (rising_edge(clock100)) then
-    	flaga_get <= flaga;
+		flaga_get <= flaga;
     	flagb_get <= flagb;
     	flagc_get <= flagc;
     	flagd_get <= flagd;
@@ -314,7 +301,7 @@ process (current_state) begin
             data_get <= (others => '1');
         when stream_out_state => 
             data_get <= data_stream_out;
-        when stream_in_state => 
+		when stream_in_state => 
             data_get <= data_stream_in;
         when others => 
             data_get <= (others => '1');
@@ -375,20 +362,23 @@ process (clock100, reset_fpga) begin
     if (reset_fpga = '1')  then
         current_state <= idle_state;
         current_mode <= MASTER_IDLE;
-		text_line1 <= "FSM FPGA";
+		text_line1 <= "FSM FPGA        ";
 		text_line2 <= "MODE: RESET     ";
     elsif (rising_edge(clock100)) then
-    	text_line1 <= "FSM FPGA";
         current_state <= next_state;
         current_mode <= slide_select_mode;
         case current_state is
             when loopback_state => 
+            	text_line1 <= "FSM FPGA        ";
             	text_line2 <= "MODE: LOOPBACK  ";
-            when stream_out_state => 
-	            text_line2 <= str(data_stream_out);
+			when stream_out_state =>
+            	text_line1 <= "FSM: STREAM OUT ";
+	            text_line2 <= vector_to_string(data_stream_out);
             when stream_in_state => 
-	            text_line2 <= "MODE: STREAM IN ";
-            when others => 
+            	text_line1 <= "FSM: STREAM IN  ";
+	            text_line2 <= vector_to_string(data_stream_in);
+            when others =>
+            	text_line1 <= "FSM FPGA        ";
 	            text_line2 <= "MODE: IDLE STATE"; 
         end case;
     end if;
@@ -451,7 +441,7 @@ begin
 				end if;
 			when move1 =>
 				if counter = 1 then
-					goto <= "10000100";
+					goto <= "10000000";
 					goto_request <= '1';
 				elsif request_served = '1' and counter > 250000 then
 					goto_request <= '0';
