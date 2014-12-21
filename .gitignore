@@ -1,5 +1,6 @@
 /ISE Spartan 3E/*
 /AN65974/*
-/GPIF II/sync_slave_fifo_2bit.cydsn/documentation/*
+/GPIF II/original_sync_slave_fifo_2bit.cydsn/documentation/*
+/EZ USB Suite/.metadata
 !/ISE Spartan 3E/*.vhd
 !/ISE Spartan 3E/*.ucf

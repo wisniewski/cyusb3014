@@ -45,5 +45,5 @@
     <State StateId="STATE3" WaitNumber="0" />
     <State StateId="STATE3" WaitNumber="0" />
     <State StateId="STATE1" WaitNumber="0" />
-  </Scenario>
+  </Scenario> 
 </GPIFIITimingSimulation>

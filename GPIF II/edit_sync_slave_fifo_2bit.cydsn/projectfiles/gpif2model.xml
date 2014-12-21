@@ -47,28 +47,28 @@
       <GPIOPinNumber>GPIO_21</GPIOPinNumber>
       <IntialValue>Low</IntialValue>
       <Polarity>ActiveLow</Polarity>
-      <Flags>Current_Thread_DMA_Ready</Flags>
+      <Flags>Thread_0_DMA_Ready</Flags>
     </Signal>
     <Signal ElementId="FLAG1" SignalType="Flags" SpecialFunction="None">
       <DisplayName>FLAGB</DisplayName>
       <GPIOPinNumber>GPIO_22</GPIOPinNumber>
       <IntialValue>Low</IntialValue>
       <Polarity>ActiveLow</Polarity>
-      <Flags>Current_Thread_DMA_Ready</Flags>
+      <Flags>Thread_0_DMA_Ready</Flags>
     </Signal>
     <Signal ElementId="FLAG2" SignalType="Flags" SpecialFunction="None">
       <DisplayName>FLAGC</DisplayName>
       <GPIOPinNumber>GPIO_23</GPIOPinNumber>
       <IntialValue>Low</IntialValue>
-      <Polarity>ActiveLow</Polarity>
-      <Flags>Current_Thread_DMA_Ready</Flags>
+      <Polarity>ActiveHigh</Polarity>
+      <Flags>Thread_3_DMA_Ready</Flags>
     </Signal>
     <Signal ElementId="FLAG3" SignalType="Flags" SpecialFunction="None">
       <DisplayName>FLAGD</DisplayName>
       <GPIOPinNumber>GPIO_25</GPIOPinNumber>
       <IntialValue>Low</IntialValue>
-      <Polarity>ActiveLow</Polarity>
-      <Flags>Current_Thread_DMA_Ready</Flags>
+      <Polarity>ActiveHigh</Polarity>
+      <Flags>Thread_3_DMA_Ready</Flags>
     </Signal>
   </Signals>
   <StateMachine>
