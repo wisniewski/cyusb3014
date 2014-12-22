@@ -1,4 +1,4 @@
-/*
+/* 
  ## Cypress USB 3.0 Platform source file (cyfxslfifosync.c)
  ## ===========================
  ##
@@ -514,6 +514,9 @@ CyFxSlFifoApplnInit (void)
         CyFxAppErrorHandler(apiRetStatus);
     }
 
+    CyU3PGpifSocketConfigure(0, CY_U3P_PIB_SOCKET_0, 6, CyFalse, 1);
+    CyU3PGpifSocketConfigure(3, CY_U3P_PIB_SOCKET_3, 6, CyFalse, 1);
+
     /* Start the state machine. */
     apiRetStatus = CyU3PGpifSMStart (SYNC_SLAVE_FIFO_2BIT_RESET, SYNC_SLAVE_FIFO_2BIT_ALPHA_RESET);
     if (apiRetStatus != CY_U3P_SUCCESS)
@@ -704,11 +707,12 @@ main (void)
 
     /* When the GPIF data bus is configured as 32-bits wide and running at 100 MHz (synchronous),
        the FX3 system clock has to be set to a frequency greater than 400 MHz. */
-#if (CY_FX_SLFIFO_GPIF_16_32BIT_CONF_SELECT == 0)
+/*#if (CY_FX_SLFIFO_GPIF_16_32BIT_CONF_SELECT == 0)
     clockConfig.setSysClk400  = CyFalse;
 #else
     clockConfig.setSysClk400  = CyTrue;
-#endif
+#endif*/
+    clockConfig.setSysClk400  = CyTrue; //100 MHz PLL
     clockConfig.cpuClkDiv     = 2;
     clockConfig.dmaClkDiv     = 2;
     clockConfig.mmioClkDiv    = 2;

@@ -54,7 +54,7 @@
       <GPIOPinNumber>GPIO_22</GPIOPinNumber>
       <IntialValue>Low</IntialValue>
       <Polarity>ActiveLow</Polarity>
-      <Flags>Thread_0_DMA_Ready</Flags>
+      <Flags>Thread_0_DMA_WaterMark</Flags>
     </Signal>
     <Signal ElementId="FLAG2" SignalType="Flags" SpecialFunction="None">
       <DisplayName>FLAGC</DisplayName>
@@ -68,7 +68,7 @@
       <GPIOPinNumber>GPIO_25</GPIOPinNumber>
       <IntialValue>Low</IntialValue>
       <Polarity>ActiveHigh</Polarity>
-      <Flags>Thread_3_DMA_Ready</Flags>
+      <Flags>Thread_3_DMA_WaterMark</Flags>
     </Signal>
   </Signals>
   <StateMachine>
