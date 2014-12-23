@@ -1,6 +1,6 @@
 /*
  * Project Name: edit_sync_slave_fifo_2bit.cyfx
- * Time : 12/22/2014 15:23:02
+ * Time : 12/23/2014 19:09:16
  * Device Type: FX3
  * Project Type: GPIF2
  *
