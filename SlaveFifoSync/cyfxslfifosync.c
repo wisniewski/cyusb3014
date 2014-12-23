@@ -137,7 +137,7 @@ void CyFxSlFifoApplnStart(void)
     if (apiRetStatus != CY_U3P_SUCCESS)
         CyFxAppErrorHandler(apiRetStatus);
 
-#ifdef MANUAL
+#ifdef MANUAL_DMA
 //----------------------------------------------------------------------------------
 // Create a DMA MANUAL channel for U2P transfer. 
 //----------------------------------------------------------------------------------
@@ -584,28 +584,27 @@ int main(void)
 	 * UART_ONLY configuration for 16 bit slave FIFO configuration and setting
 	 * isDQ32Bit for 32-bit slave FIFO configuration. */
 
-	io_cfg.useI2C = CyFalse;
-	io_cfg.useI2S = CyFalse;
-	io_cfg.useSpi = CyFalse;
+    io_cfg.useUart   = CyTrue;
+    io_cfg.useI2C    = CyFalse;
+    io_cfg.useI2S    = CyFalse;
+    io_cfg.useSpi    = CyFalse;
 #if (CY_FX_SLFIFO_GPIF_16_32BIT_CONF_SELECT == 0)
-	io_cfg.isDQ32Bit = CyFalse;
-	io_cfg.lppMode = CY_U3P_IO_MATRIX_LPP_NONE;
-    io_cfg.useUart = CyFalse;
+    io_cfg.isDQ32Bit = CyFalse;
+    io_cfg.lppMode   = CY_U3P_IO_MATRIX_LPP_UART_ONLY;
 #else
-	io_cfg.isDQ32Bit = CyTrue;
-	io_cfg.lppMode = CY_U3P_IO_MATRIX_LPP_DEFAULT;
-    io_cfg.useUart = CyTrue;
+    io_cfg.isDQ32Bit = CyTrue;
+    io_cfg.lppMode   = CY_U3P_IO_MATRIX_LPP_DEFAULT;
 #endif
-	/* No GPIOs are enabled. */
-	io_cfg.gpioSimpleEn[0] = 0;
-	io_cfg.gpioSimpleEn[1] = 0;
-	io_cfg.gpioComplexEn[0] = 0;
-	io_cfg.gpioComplexEn[1] = 0;
-	status = CyU3PDeviceConfigureIOMatrix(&io_cfg);
-	if (status != CY_U3P_SUCCESS)
-	{
-		goto handle_fatal_error;
-	}
+    /* No GPIOs are enabled. */
+    io_cfg.gpioSimpleEn[0]  = 0;
+    io_cfg.gpioSimpleEn[1]  = 0x08000000; /* GPIO 59 */
+    io_cfg.gpioComplexEn[0] = 0;
+    io_cfg.gpioComplexEn[1] = 0;
+    status = CyU3PDeviceConfigureIOMatrix (&io_cfg);
+    if (status != CY_U3P_SUCCESS)
+    {
+        goto handle_fatal_error;
+    }
 
 	/* This is a non returnable call for initializing the RTOS kernel */CyU3PKernelEntry();
 
