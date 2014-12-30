@@ -18,9 +18,13 @@
   <Scenario Name="ShortPkt" CurrentThread="Thread0">
     <State StateId="STARTSTATE1" WaitNumber="0" />
     <State StateId="STATE1" WaitNumber="0" />
+    <State StateId="STATE4" WaitNumber="0" />
+    <State StateId="STATE1" WaitNumber="0" />
   </Scenario>
   <Scenario Name="ZLP" CurrentThread="Thread0">
     <State StateId="STARTSTATE1" WaitNumber="0" />
+    <State StateId="STATE1" WaitNumber="0" />
+    <State StateId="STATE5" WaitNumber="0" />
     <State StateId="STATE1" WaitNumber="0" />
   </Scenario>
   <Scenario Name="BurstRead" CurrentThread="Thread0">

@@ -35,7 +35,7 @@ constant CNT_BITS 					: natural := 2;
 ----------------------------------------------------------------------------------
 signal sloe_stream_out_n 			: std_logic:='1';
 signal slrd_stream_out_n 			: std_logic:='1';
-signal data_stream_out_from_fx3_n 	: std_logic_vector(DATA_BITS-1 downto 0):="1111111111111111";
+signal data_stream_out_from_fx3_n 	: std_logic_vector(DATA_BITS-1 downto 0):="1101111111011111";
 signal rd_oe_delay_cnt				: std_logic_vector(CNT_BITS-1 downto 0):="00";
 signal oe_delay_cnt					: std_logic_vector(CNT_BITS-1 downto 0):="00";
 ----------------------------------------------------------------------------------

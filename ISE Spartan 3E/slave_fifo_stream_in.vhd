@@ -31,8 +31,8 @@ constant DATA_BITS 		: natural := 16;
 ----------------------------------------------------------------------------------
 -- Signals
 ----------------------------------------------------------------------------------
-signal slwr_stream_in_n : std_logic;
-signal data_stream_in_n : std_logic_vector(DATA_BITS-1 downto 0);
+signal slwr_stream_in_get : std_logic;
+signal data_stream_in_get : std_logic_vector(DATA_BITS-1 downto 0);
 ----------------------------------------------------------------------------------
 -- Stream In Finished State Machine
 ----------------------------------------------------------------------------------
@@ -51,8 +51,8 @@ begin
 ----------------------------------------------------------------------------------
 -- Signals
 ----------------------------------------------------------------------------------
-slwr_stream_in <= slwr_stream_in_n;
-data_stream_in <= data_stream_in_n; 
+slwr_stream_in <= slwr_stream_in_get;
+data_stream_in <= data_stream_in_get; 
 ----------------------------------------------------------------------------------
 -- Stream In State Change
 ----------------------------------------------------------------------------------
@@ -68,9 +68,9 @@ end process;
 ----------------------------------------------------------------------------------
 process(current_state, flagb_get) begin
 	if (current_state = stream_in_write) and (flagb_get = '1') then
-		slwr_stream_in_n <= '0';
+		slwr_stream_in_get <= '0';
 	else 
-		slwr_stream_in_n <= '1';
+		slwr_stream_in_get <= '1';
 	end if;
 end process;
 ----------------------------------------------------------------------------------
@@ -78,12 +78,10 @@ end process;
 ---------------------------------------------------------------------------------
 process(clock100, reset) begin
 	if (reset = '0') then
-		data_stream_in_n <= (others => '0');
+		data_stream_in_get <= (others => '0');
 	elsif rising_edge(clock100) then
-		if (stream_in_mode_active = '1') and (slwr_stream_in_n = '0') then
-				data_stream_in_n <= "0101011101001101"; --data_stream_in_n + '1'; 
-		--else 
-			--data_stream_in_n <= (others => '0');
+		if (stream_in_mode_active = '1') and (slwr_stream_in_get = '0') then
+			data_stream_in_get <= "0101011101001101";
 		end if;
 	end if;
 end process;

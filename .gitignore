@@ -1,6 +1,6 @@
 /ISE Spartan 3E/*
 /AN65974/*
-/SlaveFifoSync/Debug/*
+/stream_in_out_auto_dma/Debug/*
 /GPIF II/original_sync_slave_fifo_2bit.cydsn/documentation/*
 /.metadata/*
 !/ISE Spartan 3E/*.vhd

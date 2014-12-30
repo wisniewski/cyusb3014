@@ -91,7 +91,8 @@ signal clock100 : std_logic;
 signal lcd_clock50 : std_logic;
 signal reset_fpga : std_logic:='0';
 signal locked : std_logic:='0';
-signal data_get : std_logic_vector(15 downto 0);
+signal data_output_get : std_logic_vector(15 downto 0);
+signal data_input_get : std_logic_vector(15 downto 0);
 signal address_get : std_logic_vector(1 downto 0);
 signal pktend_get : std_logic;
 signal slwr_get : std_logic;
@@ -112,10 +113,9 @@ signal slwr_stream_in: std_logic;
 -- Stream Out Signals
 ----------------------------------------------------------------------------------
 signal stream_out_mode_active: std_logic;
-signal data_stream_out : std_logic_vector(15 downto 0);
+signal data_stream_out : std_logic_vector(15 downto 0):="0101000001010000";
 signal sloe_stream_out : std_logic;
 signal slrd_stream_out : std_logic;
-signal data_stream_out_ok : std_logic;
 ----------------------------------------------------------------------------------
 -- Loopback Signals
 ----------------------------------------------------------------------------------
@@ -249,15 +249,21 @@ reset_to_fx3 <= '1';
 pmode <= "11";
 pktend_get <= '1';
 
-leds_show_mode <= data_stream_out_ok;--stream_in_mode_active or stream_out_mode_active;
+leds_show_mode <= '1';--stream_in_mode_active or stream_out_mode_active;
 ----------------------------------------------------------------------------------
 -- FPGA Send All Signals
 ----------------------------------------------------------------------------------
-process (current_state) begin
+process (reset_fpga, current_state) begin
 	if reset_fpga = '1' then
 		data <= (others => '0');
+		data_output_get <= (others => '0');
+		data_input_get <= (others => '0');
     elsif (rising_edge(clock100)) then
-    	data <= data_get;
+    	if current_state = stream_in_state then
+    		data <= data_output_get;
+    	elsif current_state = stream_out_state then 
+    		data_input_get <= data;
+    	end if;
     	address <= address_get;
     	slwr <= slwr_get;
     	slcs <= slcs_get;
@@ -298,13 +304,14 @@ end process;
 process (current_state) begin
     case current_state is
         when loopback_state => 
-            data_get <= (others => '1');
+            data_stream_out <= (others => '0');
         when stream_out_state => 
-            data_get <= data_stream_out;
+            data_stream_out <= data_input_get;
 		when stream_in_state => 
-            data_get <= data_stream_in;
+            data_stream_out <= (others => '0');
+            data_output_get <= data_stream_in;
         when others => 
-            data_get <= (others => '1');
+            data_output_get <= (others => '0');
     end case;
 end process;
 ----------------------------------------------------------------------------------
