@@ -119,7 +119,13 @@ signal slrd_stream_out : std_logic;
 ----------------------------------------------------------------------------------
 -- Loopback Signals
 ----------------------------------------------------------------------------------
-signal loopback_mode_active: std_logic;
+signal data_loopback_in : std_logic_vector(15 downto 0):="0101000001010000";
+signal data_loopback_out : std_logic_vector(15 downto 0):="0101000001010000";
+signal loopback_mode_active : std_logic;
+signal slwr_loopback : std_logic;
+signal sloe_loopback : std_logic;
+signal slrd_loopback : std_logic;
+signal loopback_address : std_logic;
 ----------------------------------------------------------------------------------
 -- Components
 ----------------------------------------------------------------------------------
@@ -168,6 +174,22 @@ component slave_fifo_stream_out port
 	data_stream_out	: in std_logic_vector(15 downto 0);
 	sloe_stream_out 			: out std_logic;
 	slrd_stream_out 			: out std_logic
+); end component;
+component slave_fifo_loopback port 
+(
+	clock100 				: in std_logic;
+	reset 					: in std_logic;
+	data_loopback_in 	: in std_logic_vector(15 downto 0);
+	data_loopback_out 	: out std_logic_vector(15 downto 0);
+	loopback_mode_active 	: in std_logic;
+	flaga_get 				: in std_logic;
+	flagb_get 				: in std_logic;
+	flagc_get 				: in std_logic;
+	flagd_get 				: in std_logic;
+	slwr_loopback 			: out std_logic;
+	sloe_loopback 			: out std_logic;
+	slrd_loopback 			: out std_logic;
+	loopback_address : out std_logic
 ); end component;
 ----------------------------------------------------------------------------------
 -- Function: Convert std logic to string
@@ -237,6 +259,22 @@ int_stream_out : slave_fifo_stream_out port map
 	data_stream_out => data_stream_out,
 	sloe_stream_out => sloe_stream_out,
 	slrd_stream_out => slrd_stream_out
+);
+inst_loopback : slave_fifo_loopback port map
+(
+	clock100 => clock100,
+	reset => reset,
+	data_loopback_in => data_loopback_in,
+	data_loopback_out => data_loopback_out,
+	loopback_mode_active => loopback_mode_active,
+	flaga_get => flaga_get,
+	flagb_get => flagb_get,
+	flagc_get => flagc_get,
+	flagd_get => flagd_get,
+	slwr_loopback => slwr_loopback,
+	sloe_loopback => sloe_loopback,
+	slrd_loopback => slrd_loopback,
+	loopback_address => loopback_address
 );
 ----------------------------------------------------------------------------------
 -- General Signals
