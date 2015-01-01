@@ -82,6 +82,8 @@ process(clock100, reset) begin
 	elsif rising_edge(clock100) then
 		if (stream_in_mode_active = '1') and (slwr_stream_in_get = '0') then
 			data_stream_in_get <= "0101011101001101";
+		elsif (stream_in_mode_active = '0') then
+			data_stream_in_get <= "1111000011110000";
 		end if;
 	end if;
 end process;

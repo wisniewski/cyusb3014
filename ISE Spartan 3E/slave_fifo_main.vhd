@@ -91,8 +91,6 @@ signal clock100 : std_logic;
 signal lcd_clock50 : std_logic;
 signal reset_fpga : std_logic:='0';
 signal locked : std_logic:='0';
-signal data_output_get : std_logic_vector(15 downto 0);
-signal data_input_get : std_logic_vector(15 downto 0);
 signal address_get : std_logic_vector(1 downto 0);
 signal pktend_get : std_logic;
 signal slwr_get : std_logic;
@@ -103,17 +101,22 @@ signal flaga_get : std_logic;
 signal flagb_get : std_logic;
 signal flagc_get : std_logic;
 signal flagd_get : std_logic;
+signal data_in_get : std_logic_vector(15 downto 0);
+signal data_in_get2 : std_logic_vector(15 downto 0);
+signal data_out_get : std_logic_vector(15 downto 0);
+signal data_out_get2 : std_logic_vector(15 downto 0);
 ----------------------------------------------------------------------------------
 -- Stream In Signals
 ----------------------------------------------------------------------------------
 signal stream_in_mode_active: std_logic;
-signal data_stream_in : std_logic_vector(15 downto 0);
+signal data_stream_in : std_logic_vector(15 downto 0):="1111000011110000";
 signal slwr_stream_in: std_logic;
 ----------------------------------------------------------------------------------
 -- Stream Out Signals
 ----------------------------------------------------------------------------------
 signal stream_out_mode_active: std_logic;
-signal data_stream_out : std_logic_vector(15 downto 0):="0101000001010000";
+signal data_stream_out : std_logic_vector(15 downto 0):="1111000011110000";
+signal data_stream_out_to_show : std_logic_vector(15 downto 0):="1111000011110000";
 signal sloe_stream_out : std_logic;
 signal slrd_stream_out : std_logic;
 ----------------------------------------------------------------------------------
@@ -172,6 +175,7 @@ component slave_fifo_stream_out port
 	reset 						: in std_logic;
 	stream_out_mode_active 		: in std_logic;
 	data_stream_out	: in std_logic_vector(15 downto 0);
+	data_stream_out_to_show	: out std_logic_vector(15 downto 0);
 	sloe_stream_out 			: out std_logic;
 	slrd_stream_out 			: out std_logic
 ); end component;
@@ -257,13 +261,14 @@ int_stream_out : slave_fifo_stream_out port map
 	reset => not reset_fpga,
 	stream_out_mode_active => stream_out_mode_active,
 	data_stream_out => data_stream_out,
+	data_stream_out_to_show => data_stream_out_to_show,
 	sloe_stream_out => sloe_stream_out,
 	slrd_stream_out => slrd_stream_out
 );
 inst_loopback : slave_fifo_loopback port map
 (
 	clock100 => clock100,
-	reset => reset,
+	reset => not reset_fpga,
 	data_loopback_in => data_loopback_in,
 	data_loopback_out => data_loopback_out,
 	loopback_mode_active => loopback_mode_active,
@@ -291,17 +296,15 @@ leds_show_mode <= '1';--stream_in_mode_active or stream_out_mode_active;
 ----------------------------------------------------------------------------------
 -- FPGA Send All Signals
 ----------------------------------------------------------------------------------
-process (reset_fpga, current_state) begin
+process (reset_fpga, current_state, slrd_loopback, slwr_loopback) begin
 	if reset_fpga = '1' then
-		data <= (others => '0');
-		data_output_get <= (others => '0');
-		data_input_get <= (others => '0');
+		address <= "11";
+    	slwr <= '1';
+    	slcs <= '1';
+		slrd <= '1';
+		sloe <= '1';
+		pktend <= '1';
     elsif (rising_edge(clock100)) then
-    	if current_state = stream_in_state then
-    		data <= data_output_get;
-    	elsif current_state = stream_out_state then 
-    		data_input_get <= data;
-    	end if;
     	address <= address_get;
     	slwr <= slwr_get;
     	slcs <= slcs_get;
@@ -309,6 +312,70 @@ process (reset_fpga, current_state) begin
 		sloe <= sloe_get;
 		pktend <= pktend_get;
     end if;
+end process;
+----------------------------------------------------------------------------------
+-- Get Input Data
+----------------------------------------------------------------------------------
+process (reset_fpga, clock100) begin
+	if reset_fpga = '1' then
+		data_in_get <= (others => '0');
+    elsif (rising_edge(clock100)) then
+		data_in_get <= data;
+    end if;
+end process;
+----------------------------------------------------------------------------------
+-- Get Output Data
+----------------------------------------------------------------------------------
+process (current_state) begin
+	if current_state = stream_in_state then
+		data_out_get <= data_stream_in;
+    elsif current_state = loopback_state then
+		data_out_get <= data_loopback_out;
+	else 
+		data_out_get <= (others => '0');
+    end if;
+end process;
+----------------------------------------------------------------------------------
+-- Send Output Data
+----------------------------------------------------------------------------------
+process (reset_fpga, clock100) begin
+	if reset_fpga = '1' then
+		data_out_get2 <= (others => '0');
+    elsif (rising_edge(clock100))then
+		data_out_get2 <= data_out_get;
+    end if;
+end process;
+----------------------------------------------------------------------------------
+-- Send Output Data 2
+----------------------------------------------------------------------------------
+process (reset_fpga, slwr_get) begin
+	if reset_fpga = '1' then
+		data <= (others => '0');
+    elsif (slwr_get = '0') then
+		data <= data_out_get2;
+	else 
+		data <= (others => '0');
+    end if;
+end process;
+----------------------------------------------------------------------------------
+-- Get Input Data
+----------------------------------------------------------------------------------
+process (reset_fpga, clock100) begin
+	if reset_fpga = '1' then
+		data_in_get <= (others => '0');
+    elsif (rising_edge(clock100)) then
+		data_in_get <= data;
+    end if;
+end process;
+----------------------------------------------------------------------------------
+-- Get Input Data 2
+----------------------------------------------------------------------------------
+process (current_state, slrd_stream_out) begin
+	if current_state = loopback_state then
+		data_loopback_in <= data_in_get;
+    elsif current_state = stream_out_state then
+		data_stream_out <= data_in_get;
+	end if;
 end process;
 ----------------------------------------------------------------------------------
 -- Get Current Flag Signal
@@ -335,22 +402,6 @@ process (current_state) begin
     else 
     	slcs_get <= '0';
     end if;
-end process;
-----------------------------------------------------------------------------------
--- Get Current FPGA Data
-----------------------------------------------------------------------------------
-process (current_state) begin
-    case current_state is
-        when loopback_state => 
-            data_stream_out <= (others => '0');
-        when stream_out_state => 
-            data_stream_out <= data_input_get;
-		when stream_in_state => 
-            data_stream_out <= (others => '0');
-            data_output_get <= data_stream_in;
-        when others => 
-            data_output_get <= (others => '0');
-    end case;
 end process;
 ----------------------------------------------------------------------------------
 -- Get Loopback, Stream Out, Stream In Mode Active Signals
@@ -384,7 +435,11 @@ process (current_state) begin
 		sloe_get <= sloe_stream_out;
 		slrd_get <= slrd_stream_out;
 		slwr_get <= '1';
-	else
+	elsif current_state = loopback_state then
+		sloe_get <= sloe_loopback;
+		slrd_get <= slrd_loopback;
+		slwr_get <= slwr_loopback;
+	else 
 		sloe_get <= '1';
 		slrd_get <= '1';
 		slwr_get <= '1';
@@ -393,11 +448,11 @@ end process;
 ----------------------------------------------------------------------------------
 -- Get Address Signals
 ----------------------------------------------------------------------------------
-process (current_state) begin
-	if current_state = stream_in_state then	
-		address_get <= "00";
-	elsif current_state = stream_out_state or current_state = loopback_state then
+process (current_state, loopback_address) begin
+	if (current_state = stream_out_state) or (loopback_address = '1') then
 		address_get <= "11";
+	else	
+		address_get <= "00";
 	end if;
 end process;
 ----------------------------------------------------------------------------------
@@ -414,11 +469,11 @@ process (clock100, reset_fpga) begin
         current_mode <= slide_select_mode;
         case current_state is
             when loopback_state => 
-            	text_line1 <= "FSM FPGA        ";
-            	text_line2 <= "MODE: LOOPBACK  ";
+            	text_line1 <= vector_to_string(data_loopback_in);
+            	text_line2 <= vector_to_string(data_loopback_out);
 			when stream_out_state =>
             	text_line1 <= "FSM: STREAM OUT ";
-	            text_line2 <= vector_to_string(data_stream_out);
+	            text_line2 <= vector_to_string(data_stream_out_to_show);
             when stream_in_state => 
             	text_line1 <= "FSM: STREAM IN  ";
 	            text_line2 <= vector_to_string(data_stream_in);

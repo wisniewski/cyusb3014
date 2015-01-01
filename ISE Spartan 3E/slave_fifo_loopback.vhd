@@ -37,9 +37,16 @@ signal buffer_write_enable : std_logic;
 signal buffer_read_enable : std_logic;
 signal buffer_full : std_logic;
 signal buffer_empty : std_logic;
+signal buffer_reset : std_logic;
 
 signal rd_oe_delay_cnt				: std_logic_vector(1 downto 0):="00";
 signal oe_delay_cnt					: std_logic_vector(1 downto 0):="00";
+signal data_loopback_in_get : std_logic_vector(15 downto 0);
+signal data_loopback_out_get : std_logic_vector(15 downto 0);
+
+signal slrd_loopback_get : std_logic;
+signal slwr_loopback_get : std_logic;
+signal sloe_loopback_get : std_logic;
 ----------------------------------------------------------------------------------
 -- Stream In Finished State Machine
 ----------------------------------------------------------------------------------
@@ -82,19 +89,118 @@ begin
 inst_fifo_buffer : slave_fifo_buffer PORT MAP 
 (
 	clk => clock100,
-    rst => reset,
-    din => data_loopback_in,
+    rst => buffer_reset,
+    din => data_loopback_in_get,
     wr_en => buffer_write_enable,
     rd_en => buffer_read_enable,
-    dout => data_loopback_out,
+    dout => data_loopback_out_get,
     full => buffer_full,
     empty => buffer_empty
 );
 ----------------------------------------------------------------------------------
+-- Signals
+----------------------------------------------------------------------------------
+slwr_loopback <= slwr_loopback_get;
+slrd_loopback <= slrd_loopback_get;
+sloe_loopback <= sloe_loopback_get;
+----------------------------------------------------------------------------------
+-- SLRD Loopback
+----------------------------------------------------------------------------------
+process(current_state) begin
+	if (current_state = loopback_read) or (current_state = loopback_read_rd_oe_delay) then
+		slrd_loopback_get <= '0';
+	else 
+		slrd_loopback_get <= '1';
+	end if;
+end process;
+----------------------------------------------------------------------------------
+-- SLOE Loopback
+----------------------------------------------------------------------------------
+process(current_state) begin
+	if (current_state = loopback_read) or (current_state = loopback_read_rd_oe_delay) 
+	or (current_state = loopback_read_oe_delay) then
+		sloe_loopback_get <= '0';
+	else 
+		sloe_loopback_get <= '1';
+	end if;
+end process;
+----------------------------------------------------------------------------------
+-- SLWR Loopback
+----------------------------------------------------------------------------------
+process(current_state) begin
+	if (current_state = loopback_write) then
+		slwr_loopback_get <= '0';
+	else 
+		slwr_loopback_get <= '1';
+	end if;
+end process;
+----------------------------------------------------------------------------------
+-- Buffer Read Enable
+----------------------------------------------------------------------------------
+process(current_state) begin
+	if (current_state = loopback_write) then
+		buffer_read_enable <= '1';
+	else 
+		buffer_read_enable <= '0';
+	end if;
+end process;
+----------------------------------------------------------------------------------
+-- FIFO Flush
+----------------------------------------------------------------------------------
+process(current_state) begin
+	if (current_state = loopback_flush_fifo) then
+		buffer_reset <= '1';
+	else 
+		buffer_reset <= '0';
+	end if;
+end process;
+----------------------------------------------------------------------------------
+-- Buffer Write Enable
+----------------------------------------------------------------------------------
+process(slrd_loopback_get) begin
+	if (slrd_loopback_get = '0') then
+		buffer_write_enable <= '1';
+	else 
+		buffer_write_enable <= '0';
+	end if;
+end process;
+----------------------------------------------------------------------------------
+-- Save data in FIFO
+----------------------------------------------------------------------------------
+process(slrd_loopback_get) begin
+	if (slrd_loopback_get = '0') then
+		data_loopback_in_get <= data_loopback_in;
+	else 
+		data_loopback_in_get <= (others => '0');
+	end if;
+end process;
+----------------------------------------------------------------------------------
+-- Send data from FIFO
+----------------------------------------------------------------------------------
+process(slwr_loopback_get) begin
+	if (slwr_loopback_get = '0') then
+		data_loopback_out <= data_loopback_out_get;
+	else 
+		data_loopback_out <= (others => '0');
+	end if;
+end process;
+----------------------------------------------------------------------------------
+-- Loopback Address
+----------------------------------------------------------------------------------
+process(current_state) begin
+	if (current_state = loopback_flagc_rcvd) or (current_state = loopback_wait_flagd) 
+	or (current_state = loopback_read) or (current_state = loopback_read_rd_oe_delay)
+	or (current_state = loopback_read_oe_delay) then
+		loopback_address <= '1';
+	else 
+		loopback_address <= '0';
+	end if;
+end process;
+----------------------------------------------------------------------------------
 -- RD OE Delay Counter
 ----------------------------------------------------------------------------------
-process(clock100, reset) begin
-	if (reset = '1') then
+process(clock100, reset, current_state) begin
+	if (reset = '0') then
 		rd_oe_delay_cnt <= (others => '0');
 	elsif (rising_edge(clock100)) then
 		if (current_state = loopback_read) then
@@ -110,7 +216,7 @@ end process;
 -- OE Delay Counter
 ----------------------------------------------------------------------------------
 process(clock100, reset) begin
-	if (reset = '1') then
+	if (reset = '0') then
 		oe_delay_cnt <= (others => '0');
 	elsif (rising_edge(clock100)) then
 		if (current_state = loopback_read_rd_oe_delay) then
