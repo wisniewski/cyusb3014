@@ -193,7 +193,8 @@ component slave_fifo_loopback port
 	slwr_loopback 			: out std_logic;
 	sloe_loopback 			: out std_logic;
 	slrd_loopback 			: out std_logic;
-	loopback_address : out std_logic
+	loopback_address : out std_logic;
+	buffer_empty_show : out std_logic
 ); end component;
 ----------------------------------------------------------------------------------
 -- Function: Convert std logic to string
@@ -279,7 +280,8 @@ inst_loopback : slave_fifo_loopback port map
 	slwr_loopback => slwr_loopback,
 	sloe_loopback => sloe_loopback,
 	slrd_loopback => slrd_loopback,
-	loopback_address => loopback_address
+	loopback_address => loopback_address,
+	buffer_empty_show => leds_show_mode
 );
 ----------------------------------------------------------------------------------
 -- General Signals
@@ -292,7 +294,7 @@ reset_to_fx3 <= '1';
 pmode <= "11";
 pktend_get <= '1';
 
-leds_show_mode <= '1';--stream_in_mode_active or stream_out_mode_active;
+--leds_show_mode <= '1';--stream_in_mode_active or stream_out_mode_active;
 ----------------------------------------------------------------------------------
 -- FPGA Send All Signals
 ----------------------------------------------------------------------------------
@@ -316,13 +318,13 @@ end process;
 ----------------------------------------------------------------------------------
 -- Get Input Data
 ----------------------------------------------------------------------------------
-process (reset_fpga, clock100) begin
-	if reset_fpga = '1' then
-		data_in_get <= (others => '0');
-    elsif (rising_edge(clock100)) then
-		data_in_get <= data;
-    end if;
-end process;
+--process (reset_fpga, clock100) begin
+--	if reset_fpga = '1' then
+--		data_in_get <= (others => '0');
+--    elsif (rising_edge(clock100)) then
+--		data_in_get <= data;
+--    end if;
+--end process;
 ----------------------------------------------------------------------------------
 -- Get Output Data
 ----------------------------------------------------------------------------------
@@ -341,26 +343,24 @@ end process;
 process (reset_fpga, clock100) begin
 	if reset_fpga = '1' then
 		data_out_get2 <= (others => '0');
-    elsif (rising_edge(clock100))then
+    elsif (rising_edge(clock100)) then
 		data_out_get2 <= data_out_get;
     end if;
 end process;
 ----------------------------------------------------------------------------------
 -- Send Output Data 2
 ----------------------------------------------------------------------------------
-process (reset_fpga, slwr_get) begin
-	if reset_fpga = '1' then
-		data <= (others => '0');
-    elsif (slwr_get = '0') then
+process (slwr_get) begin
+    if (slwr_get = '0') then
 		data <= data_out_get2;
 	else 
-		data <= (others => '0');
+		data <= (others => 'Z');
     end if;
 end process;
 ----------------------------------------------------------------------------------
 -- Get Input Data
 ----------------------------------------------------------------------------------
-process (reset_fpga, clock100) begin
+process (reset_fpga, clock100, current_state) begin
 	if reset_fpga = '1' then
 		data_in_get <= (others => '0');
     elsif (rising_edge(clock100)) then
@@ -373,8 +373,13 @@ end process;
 process (current_state, slrd_stream_out) begin
 	if current_state = loopback_state then
 		data_loopback_in <= data_in_get;
+		data_stream_out <= (others => '0');
     elsif current_state = stream_out_state then
 		data_stream_out <= data_in_get;
+		data_loopback_in <= (others => '0');
+	else 
+		data_stream_out <= (others => '0');
+		data_loopback_in <= (others => '0');
 	end if;
 end process;
 ----------------------------------------------------------------------------------

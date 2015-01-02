@@ -35,7 +35,7 @@
 #define CY_FX_SLFIFO_GPIF_16_32BIT_CONF_SELECT (0)
 
 /* set up AUTO (0) or MANUAL (1) DMA channel for Stream IN/OUT transfers */
-#define AUTO_MANUAL_CONF_SELECT (0)
+#define AUTO_MANUAL_CONF_SELECT (1)
 
 #define BURST_LEN 16
 #define DMA_BUF_SIZE						 (16)

@@ -38,14 +38,6 @@ signal sloe_stream_out_n 			: std_logic:='1';
 signal slrd_stream_out_n 			: std_logic:='1';
 signal rd_oe_delay_cnt				: std_logic_vector(CNT_BITS-1 downto 0):="00";
 signal oe_delay_cnt					: std_logic_vector(CNT_BITS-1 downto 0):="00";
-
-signal buffer_write_enable : std_logic;
-signal buffer_read_enable : std_logic;
-signal buffer_full : std_logic;
-signal buffer_empty : std_logic;
-signal buffer_reset : std_logic;
-signal din : std_logic_vector(15 downto 0):="0000000000000000";
-signal dout : std_logic_vector(15 downto 0):="0000000000000000";
 ----------------------------------------------------------------------------------
 -- Stream Out Finished State Machine
 ----------------------------------------------------------------------------------
@@ -53,37 +45,9 @@ type stream_out_states is (stream_out_idle, stream_out_flagc_rcvd, stream_out_wa
 	stream_out_read, stream_out_read_rd_oe_delay, stream_out_read_oe_delay);
 signal current_state, next_state : stream_out_states;
 ----------------------------------------------------------------------------------
--- Components
-----------------------------------------------------------------------------------
-COMPONENT slave_fifo_buffer PORT 
-(
-    clk : IN STD_LOGIC;
-    rst : IN STD_LOGIC;
-    din : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
-    wr_en : IN STD_LOGIC;
-    rd_en : IN STD_LOGIC;
-    dout : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
-    full : OUT STD_LOGIC;
-    empty : OUT STD_LOGIC
-); END COMPONENT;
-----------------------------------------------------------------------------------
 -- Main code begin
 ----------------------------------------------------------------------------------
 begin
-----------------------------------------------------------------------------------
--- Port map
-----------------------------------------------------------------------------------
-inst_fifo_buffer2 : slave_fifo_buffer PORT MAP 
-(
-	clk => clock100,
-    rst => buffer_reset,
-    din => din,
-    wr_en => buffer_write_enable,
-    rd_en => buffer_read_enable,
-    dout => dout,
-    full => buffer_full,
-    empty => buffer_empty
-);
 ----------------------------------------------------------------------------------
 -- Signals
 ----------------------------------------------------------------------------------

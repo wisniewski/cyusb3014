@@ -1,7 +1,8 @@
 /ISE Spartan 3E/*
-/AN65974/*
 /stream_in_out_auto_manual_dma/Debug/*
+/stream_in_out_auto_manual_dma/Release/*
 /loopback_auto_manual_dma/Debug/*
+/loopback_auto_manual_dma/Release/*
 /GPIF II/original_sync_slave_fifo_2bit.cydsn/documentation/*
 /.metadata/*
 !/ISE Spartan 3E/*.vhd
