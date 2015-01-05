@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------
--- Synchronous Slave FIFO Interface - Stream In Module
+-- Synchronous Slave FIFO Interface - Stream Write to FX3 Module
 -- FPGA Writing to Slave FIFO
 ----------------------------------------------------------------------------------
 library ieee;
@@ -9,41 +9,45 @@ use ieee.std_logic_unsigned.all;
 ----------------------------------------------------------------------------------
 -- Entity
 ----------------------------------------------------------------------------------
-entity slave_fifo_stream_in is port 
+entity slave_fifo_stream_write_to_fx3 is 
+generic
 (
-	clock100 				: in std_logic;
-	flaga_get 				: in std_logic;
-	flagb_get 				: in std_logic;
-	reset 					: in std_logic;
-	stream_in_mode_active 	: in std_logic;
-	slwr_stream_in 			: out std_logic;
-	data_stream_in 	: out std_logic_vector(15 downto 0)
+	DATA_BITS : natural := 16
 );
-end slave_fifo_stream_in;
+port 
+(
+	clock100 : in std_logic;
+	flaga_get : in std_logic;
+	flagb_get : in std_logic;
+	reset : in std_logic;
+	stream_in_mode_active : in std_logic;
+	slwr_stream_in : out std_logic;
+	data_stream_in : out std_logic_vector(DATA_BITS-1 downto 0)
+); end slave_fifo_stream_write_to_fx3;
 ----------------------------------------------------------------------------------
 -- Architecture
 ----------------------------------------------------------------------------------
-architecture stream_in_arch of slave_fifo_stream_in is
+architecture stream_write_to_fx3_arch of slave_fifo_stream_write_to_fx3 is
 ----------------------------------------------------------------------------------
 -- Constants
 ----------------------------------------------------------------------------------
-constant DATA_BITS 		: natural := 16;
+constant DATA_BIT : natural := 16;
 ----------------------------------------------------------------------------------
 -- Signals
 ----------------------------------------------------------------------------------
 signal slwr_stream_in_get : std_logic;
-signal data_stream_in_get : std_logic_vector(DATA_BITS-1 downto 0);
+signal data_stream_in_get : std_logic_vector(DATA_BIT-1 downto 0);
 ----------------------------------------------------------------------------------
--- Stream In Finished State Machine
+-- Stream Write to FX3 Finished State Machine
 ----------------------------------------------------------------------------------
-type stream_in_states is 
+type stream_write_to_fx3_states is 
 (
 	stream_in_idle, 
 	stream_in_wait_flagb, 
 	stream_in_write, 
 	stream_in_wr_delay
 );
-signal current_state, next_state : stream_in_states;
+signal current_state, next_state : stream_write_to_fx3_states;
 ----------------------------------------------------------------------------------
 -- Main code begin
 ----------------------------------------------------------------------------------
@@ -54,7 +58,7 @@ begin
 slwr_stream_in <= slwr_stream_in_get;
 data_stream_in <= data_stream_in_get; 
 ----------------------------------------------------------------------------------
--- Stream In State Change
+-- Stream Write to FX3 State Change
 ----------------------------------------------------------------------------------
 process (clock100, reset) begin
 	if (reset = '0') then
@@ -88,7 +92,7 @@ process(clock100, reset) begin
 	end if;
 end process;
 ----------------------------------------------------------------------------------
--- Stream In Main FSM
+-- Stream Write to FX3 Main FSM
 ----------------------------------------------------------------------------------
 process(current_state, flaga_get, flagb_get, stream_in_mode_active) begin
 	next_state <= current_state;
@@ -120,4 +124,4 @@ end process;
 ----------------------------------------------------------------------------------
 -- End Architecture
 ----------------------------------------------------------------------------------
-end stream_in_arch;
+end stream_write_to_fx3_arch;

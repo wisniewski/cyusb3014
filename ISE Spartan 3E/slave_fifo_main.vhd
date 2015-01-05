@@ -1,5 +1,13 @@
 ----------------------------------------------------------------------------------
 -- Synchronous Slave FIFO Interface Main Module
+-- Three Modules: 
+-- 1) FPGA continuously writes full packets (Stream from FPGA to FX3)
+-- 2) FPGA continuously reads full packets (Stream from FX3 to FPGA)
+-- 3) Loopback transfer mode
+-- Author: Mariusz Wisniewski (www.kocurkolandia.pl)
+-- December 2014 - January 2015
+----------------------------------------------------------------------------------
+-- Libraries
 ----------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
@@ -8,7 +16,16 @@ use ieee.std_logic_unsigned.all;
 ----------------------------------------------------------------------------------
 -- Entity
 ----------------------------------------------------------------------------------
-entity slave_fifo_main is port
+entity slave_fifo_main is 
+generic
+(
+	SLIDE_BITS : natural := 3;
+	ADDRESS_BITS : natural := 2;
+	DATA_BITS : natural := 16;
+	PMODE_BITS : natural := 2;
+	LCD_BITS : natural := 4
+);
+port
 (
 	clock50 : in std_logic; -- input 50 MHz onboard clock
 	clock100_out : out std_logic; -- output 100 MHz clock to FX3 (PCLK)
@@ -17,28 +34,28 @@ entity slave_fifo_main is port
 	reset_from_fx3 : in std_logic; -- input reset FIFO from FX3 (INT_N_CTL15)
 	reset_to_fx3 : out std_logic; -- RESET
 	
-	slide_select_mode : in std_logic_vector(2 downto 0):="000"; -- select mode (idle, stream, loop)
-    leds_show_mode : out std_logic:='0'; -- show mode on leds
+	slide_select_mode : in std_logic_vector(SLIDE_BITS-1 downto 0):="000"; -- select mode (idle, stream, loop)
+    led_buffer_empty_show : out std_logic:='0'; -- show FIFO state - empty or not
 
-    address : out std_logic_vector(1 downto 0):="00"; -- 2-bit address bus (A)
-	data : inout std_logic_vector(15 downto 0):="0000000000000000"; -- 16-bit data bus (DQ)
-	pktend : out std_logic;
-	pmode : out std_logic_vector(1 downto 0);
+    address : out std_logic_vector(ADDRESS_BITS-1 downto 0):="00"; -- 2-bit address bus (A)
+	data : inout std_logic_vector(DATA_BITS-1 downto 0):="0000000000000000"; -- 16-bit data bus (DQ)
+	pktend : out std_logic; -- always '1'
+	pmode : out std_logic_vector(PMODE_BITS-1 downto 0):="11"; -- always "11"
 
 	slcs : out std_logic; -- chip select
 	slwr : out std_logic; -- write strobe
 	slrd : out std_logic; -- read strobe
 	sloe : out std_logic; -- output enable
 
-	flaga : in std_logic; -- write
-	flagb : in std_logic; -- write
-	flagc : in std_logic; -- read
-	flagd : in std_logic; -- read
+	flaga : in std_logic; -- write to fx3
+	flagb : in std_logic; -- write to fx3
+	flagc : in std_logic; -- read from fx3
+	flagd : in std_logic; -- read from fx3
 	
-	lcd_e : out std_logic; -- lcd enable
+	lcd_e : out std_logic; -- lcd signals
 	lcd_rs : out std_logic; 
 	lcd_rw : out std_logic;
-	lcd_data : out std_logic_vector(3 downto 0); -- lcd 4-bit bus
+	lcd_data : out std_logic_vector(LCD_BITS-1 downto 0); -- lcd 4-bit bus
 	lcd_srataflash_disable : out std_logic -- disable useless feature
 ); end slave_fifo_main;
 ----------------------------------------------------------------------------------
@@ -52,8 +69,8 @@ type fpga_master_states is
 (
 	idle_state, 
 	loopback_state, 
-	stream_out_state, 
-	stream_in_state
+	stream_read_from_fx3_state, 
+	stream_write_to_fx3_state
 );
 signal current_state : fpga_master_states:=idle_state;
 signal next_state : fpga_master_states:=idle_state;
@@ -65,14 +82,15 @@ constant MASTER_IDLE : std_logic_vector(2 downto 0):="111";
 constant LOOPBACK : std_logic_vector(2 downto 0):="001";
 constant STREAM_OUT : std_logic_vector(2 downto 0):="010";
 constant STREAM_IN : std_logic_vector(2 downto 0):="100";
-constant RESET_MODE : std_logic_vector(2 downto 0):="101";
+
+constant DATA_BIT : natural := 16;
 ----------------------------------------------------------------------------------
 -- LCD Signals
 ----------------------------------------------------------------------------------
-signal text_line1 : string(1 to 16);
-signal text_line2 : string(1 to 16);
-signal lcd_data_to_send, goto : std_logic_vector(7 downto 0);
-signal data_request, clear, goto_request, request_served, display_ready : std_logic;
+signal lcd_text_line1 : string(1 to DATA_BIT);
+signal lcd_text_line2 : string(1 to DATA_BIT);
+signal lcd_data_to_send, lcd_goto : std_logic_vector(7 downto 0);
+signal lcd_data_request, lcd_clear, lcd_goto_request, lcd_request_served, lcd_display_ready : std_logic;
 type lcd_states is 
 (
 	start, 
@@ -90,7 +108,6 @@ signal lcd_current_state : lcd_states := start;
 signal clock100 : std_logic;
 signal lcd_clock50 : std_logic;
 signal reset_fpga : std_logic:='0';
-signal locked : std_logic:='0';
 signal address_get : std_logic_vector(1 downto 0);
 signal pktend_get : std_logic;
 signal slwr_get : std_logic;
@@ -101,29 +118,28 @@ signal flaga_get : std_logic;
 signal flagb_get : std_logic;
 signal flagc_get : std_logic;
 signal flagd_get : std_logic;
-signal data_in_get : std_logic_vector(15 downto 0);
-signal data_in_get2 : std_logic_vector(15 downto 0);
-signal data_out_get : std_logic_vector(15 downto 0);
-signal data_out_get2 : std_logic_vector(15 downto 0);
+signal data_in_get : std_logic_vector(DATA_BIT-1 downto 0);
+signal data_out_get : std_logic_vector(DATA_BIT-1 downto 0);
+signal data_out_get2 : std_logic_vector(DATA_BIT-1 downto 0);
 ----------------------------------------------------------------------------------
 -- Stream In Signals
 ----------------------------------------------------------------------------------
 signal stream_in_mode_active: std_logic;
-signal data_stream_in : std_logic_vector(15 downto 0):="1111000011110000";
+signal data_stream_in : std_logic_vector(DATA_BIT-1 downto 0):="1111000011110000";
 signal slwr_stream_in: std_logic;
 ----------------------------------------------------------------------------------
 -- Stream Out Signals
 ----------------------------------------------------------------------------------
 signal stream_out_mode_active: std_logic;
-signal data_stream_out : std_logic_vector(15 downto 0):="1111000011110000";
-signal data_stream_out_to_show : std_logic_vector(15 downto 0):="1111000011110000";
+signal data_stream_out : std_logic_vector(DATA_BIT-1 downto 0):="1111000011110000";
+signal data_stream_out_to_show : std_logic_vector(DATA_BIT-1 downto 0):="1111000011110000";
 signal sloe_stream_out : std_logic;
 signal slrd_stream_out : std_logic;
 ----------------------------------------------------------------------------------
 -- Loopback Signals
 ----------------------------------------------------------------------------------
-signal data_loopback_in : std_logic_vector(15 downto 0):="0101000001010000";
-signal data_loopback_out : std_logic_vector(15 downto 0):="0101000001010000";
+signal data_loopback_in : std_logic_vector(DATA_BIT-1 downto 0):="0101000001010000";
+signal data_loopback_out : std_logic_vector(DATA_BIT-1 downto 0):="0101000001010000";
 signal loopback_mode_active : std_logic;
 signal slwr_loopback : std_logic;
 signal sloe_loopback : std_logic;
@@ -150,14 +166,14 @@ component lcd_controller port
 	lcd_rw : out std_logic;
 	lcd_data : out std_logic_vector(3 downto 0);
 	lcd_data_to_send : in std_logic_vector(7 downto 0);
-	data_request : in std_logic;
-	clear : in std_logic;
-	goto : in std_logic_vector(7 downto 0);
-	goto_request : in std_logic;
-	request_served : out std_logic;
-	display_ready : buffer std_logic
+	lcd_data_request : in std_logic;
+	lcd_clear : in std_logic;
+	lcd_goto : in std_logic_vector(7 downto 0);
+	lcd_goto_request : in std_logic;
+	lcd_request_served : out std_logic;
+	lcd_display_ready : buffer std_logic
 ); end component;
-component slave_fifo_stream_in port 
+component slave_fifo_stream_write_to_fx3 port 
 (
 	clock100 : in std_logic;
 	flaga_get : in std_logic;
@@ -165,17 +181,17 @@ component slave_fifo_stream_in port
 	reset : in std_logic;
 	stream_in_mode_active : in std_logic;
 	slwr_stream_in : out std_logic;
-	data_stream_in : out std_logic_vector(15 downto 0)
+	data_stream_in : out std_logic_vector(DATA_BIT-1 downto 0)
 ); end component;
-component slave_fifo_stream_out port 
+component slave_fifo_stream_read_from_fx3 port 
 (
 	clock100 					: in std_logic;
 	flagc_get 					: in std_logic;
 	flagd_get 					: in std_logic;
 	reset 						: in std_logic;
 	stream_out_mode_active 		: in std_logic;
-	data_stream_out	: in std_logic_vector(15 downto 0);
-	data_stream_out_to_show	: out std_logic_vector(15 downto 0);
+	data_stream_out	: in std_logic_vector(DATA_BIT-1 downto 0);
+	data_stream_out_to_show	: out std_logic_vector(DATA_BIT-1 downto 0);
 	sloe_stream_out 			: out std_logic;
 	slrd_stream_out 			: out std_logic
 ); end component;
@@ -183,8 +199,8 @@ component slave_fifo_loopback port
 (
 	clock100 				: in std_logic;
 	reset 					: in std_logic;
-	data_loopback_in 	: in std_logic_vector(15 downto 0);
-	data_loopback_out 	: out std_logic_vector(15 downto 0);
+	data_loopback_in 	: in std_logic_vector(DATA_BIT-1 downto 0);
+	data_loopback_out 	: out std_logic_vector(DATA_BIT-1 downto 0);
 	loopback_mode_active 	: in std_logic;
 	flaga_get 				: in std_logic;
 	flagb_get 				: in std_logic;
@@ -226,7 +242,7 @@ inst_slave_fifo_dcm : slave_fifo_dcm port map
 	CLKIN_IBUFG_OUT => open,
 	CLK0_OUT => lcd_clock50,
 	CLK2X_OUT => clock100,
-	LOCKED_OUT => locked
+	LOCKED_OUT => open
 );
 inst_lcd_controller : lcd_controller port map
 (
@@ -237,14 +253,14 @@ inst_lcd_controller : lcd_controller port map
 	lcd_rw => lcd_rw,
 	lcd_data => lcd_data,
 	lcd_data_to_send => lcd_data_to_send,
-	data_request => data_request,
-	clear => clear,
-	goto => goto,
-	goto_request => goto_request,
-	request_served => request_served,
-	display_ready => display_ready
+	lcd_data_request => lcd_data_request,
+	lcd_clear => lcd_clear,
+	lcd_goto => lcd_goto,
+	lcd_goto_request => lcd_goto_request,
+	lcd_request_served => lcd_request_served,
+	lcd_display_ready => lcd_display_ready
 );
-inst_stream_in : slave_fifo_stream_in port map
+inst_stream_write_to_fx3 : slave_fifo_stream_write_to_fx3 port map
 (
 	clock100 => clock100,
 	flaga_get => flaga_get,
@@ -254,7 +270,7 @@ inst_stream_in : slave_fifo_stream_in port map
 	slwr_stream_in => slwr_stream_in,
 	data_stream_in => data_stream_in
 );
-int_stream_out : slave_fifo_stream_out port map
+int_stream_read_from_fx3 : slave_fifo_stream_read_from_fx3 port map
 (
 	clock100 => clock100,
 	flagc_get => flagc_get,
@@ -281,7 +297,7 @@ inst_loopback : slave_fifo_loopback port map
 	sloe_loopback => sloe_loopback,
 	slrd_loopback => slrd_loopback,
 	loopback_address => loopback_address,
-	buffer_empty_show => leds_show_mode
+	buffer_empty_show => led_buffer_empty_show
 );
 ----------------------------------------------------------------------------------
 -- General Signals
@@ -293,8 +309,6 @@ lcd_srataflash_disable <= '1';
 reset_to_fx3 <= '1';
 pmode <= "11";
 pktend_get <= '1';
-
---leds_show_mode <= '1';--stream_in_mode_active or stream_out_mode_active;
 ----------------------------------------------------------------------------------
 -- FPGA Send All Signals
 ----------------------------------------------------------------------------------
@@ -316,20 +330,10 @@ process (reset_fpga, current_state, slrd_loopback, slwr_loopback) begin
     end if;
 end process;
 ----------------------------------------------------------------------------------
--- Get Input Data
-----------------------------------------------------------------------------------
---process (reset_fpga, clock100) begin
---	if reset_fpga = '1' then
---		data_in_get <= (others => '0');
---    elsif (rising_edge(clock100)) then
---		data_in_get <= data;
---    end if;
---end process;
-----------------------------------------------------------------------------------
 -- Get Output Data
 ----------------------------------------------------------------------------------
 process (current_state) begin
-	if current_state = stream_in_state then
+	if current_state = stream_write_to_fx3_state then
 		data_out_get <= data_stream_in;
     elsif current_state = loopback_state then
 		data_out_get <= data_loopback_out;
@@ -338,7 +342,7 @@ process (current_state) begin
     end if;
 end process;
 ----------------------------------------------------------------------------------
--- Send Output Data
+-- Send Output Data 2
 ----------------------------------------------------------------------------------
 process (reset_fpga, clock100) begin
 	if reset_fpga = '1' then
@@ -348,7 +352,7 @@ process (reset_fpga, clock100) begin
     end if;
 end process;
 ----------------------------------------------------------------------------------
--- Send Output Data 2
+-- Send Output Data 3
 ----------------------------------------------------------------------------------
 process (slwr_get) begin
     if (slwr_get = '0') then
@@ -374,7 +378,7 @@ process (current_state, slrd_stream_out) begin
 	if current_state = loopback_state then
 		data_loopback_in <= data_in_get;
 		data_stream_out <= (others => '0');
-    elsif current_state = stream_out_state then
+    elsif current_state = stream_read_from_fx3_state then
 		data_stream_out <= data_in_get;
 		data_loopback_in <= (others => '0');
 	else 
@@ -399,16 +403,6 @@ process (reset_fpga, clock100) begin
     end if;
 end process;
 ----------------------------------------------------------------------------------
--- Get Chip Select Signal 
-----------------------------------------------------------------------------------
-process (current_state) begin
-	if current_state = idle_state then
-		slcs_get <= '1';
-    else 
-    	slcs_get <= '0';
-    end if;
-end process;
-----------------------------------------------------------------------------------
 -- Get Loopback, Stream Out, Stream In Mode Active Signals
 ----------------------------------------------------------------------------------
 process (current_state) begin
@@ -417,12 +411,12 @@ process (current_state) begin
 	else 
 		loopback_mode_active <= '0';
 	end if;
-	if current_state = stream_out_state then
+	if current_state = stream_read_from_fx3_state then
 		stream_out_mode_active <= '1';
 	else 
 		stream_out_mode_active <= '0';
 	end if;
-	if current_state = stream_in_state then
+	if current_state = stream_write_to_fx3_state then
 		stream_in_mode_active <= '1';
 	else 
 		stream_in_mode_active <= '0';
@@ -432,19 +426,23 @@ end process;
 -- Get Output/Enable, Read/Write and Write Signals
 ----------------------------------------------------------------------------------
 process (current_state) begin
-	if current_state = stream_in_state then
+	if current_state = stream_write_to_fx3_state then
+		slcs_get <= '0';
 		sloe_get <= '1';
 		slrd_get <= '1';
 		slwr_get <= slwr_stream_in;
-	elsif current_state = stream_out_state then
+	elsif current_state = stream_read_from_fx3_state then
+		slcs_get <= '0';
 		sloe_get <= sloe_stream_out;
 		slrd_get <= slrd_stream_out;
 		slwr_get <= '1';
 	elsif current_state = loopback_state then
+		slcs_get <= '0';
 		sloe_get <= sloe_loopback;
 		slrd_get <= slrd_loopback;
 		slwr_get <= slwr_loopback;
-	else 
+	else
+		slcs_get <= '1';
 		sloe_get <= '1';
 		slrd_get <= '1';
 		slwr_get <= '1';
@@ -454,7 +452,7 @@ end process;
 -- Get Address Signals
 ----------------------------------------------------------------------------------
 process (current_state, loopback_address) begin
-	if (current_state = stream_out_state) or (loopback_address = '1') then
+	if (current_state = stream_read_from_fx3_state) or (loopback_address = '1') then
 		address_get <= "11";
 	else	
 		address_get <= "00";
@@ -467,24 +465,24 @@ process (clock100, reset_fpga) begin
     if (reset_fpga = '1')  then
         current_state <= idle_state;
         current_mode <= MASTER_IDLE;
-		text_line1 <= "FSM FPGA        ";
-		text_line2 <= "MODE: RESET     ";
+		lcd_text_line1 <= "FSM FPGA        ";
+		lcd_text_line2 <= "MODE: RESET     ";
     elsif (rising_edge(clock100)) then
         current_state <= next_state;
         current_mode <= slide_select_mode;
         case current_state is
             when loopback_state => 
-            	text_line1 <= vector_to_string(data_loopback_in);
-            	text_line2 <= vector_to_string(data_loopback_out);
-			when stream_out_state =>
-            	text_line1 <= "FSM: STREAM OUT ";
-	            text_line2 <= vector_to_string(data_stream_out_to_show);
-            when stream_in_state => 
-            	text_line1 <= "FSM: STREAM IN  ";
-	            text_line2 <= vector_to_string(data_stream_in);
+            	lcd_text_line1 <= "FSM: LOOPBACK   ";
+            	lcd_text_line2 <= vector_to_string(data_loopback_out);
+			when stream_read_from_fx3_state =>
+            	lcd_text_line1 <= "FSM: STREAM OUT ";
+	            lcd_text_line2 <= vector_to_string(data_stream_out_to_show);
+            when stream_write_to_fx3_state => 
+            	lcd_text_line1 <= "FSM: STREAM IN  ";
+	            lcd_text_line2 <= vector_to_string(data_stream_in);
             when others =>
-            	text_line1 <= "FSM FPGA        ";
-	            text_line2 <= "MODE: IDLE STATE"; 
+            	lcd_text_line1 <= "FSM FPGA        ";
+	            lcd_text_line2 <= "MODE: IDLE STATE"; 
         end case;
     end if;
 end process;
@@ -498,9 +496,9 @@ process(current_state, current_mode) begin
             if current_mode = LOOPBACK then
                 next_state <= loopback_state;
             elsif current_mode = STREAM_OUT then 
-                next_state <= stream_out_state;
+                next_state <= stream_read_from_fx3_state;
             elsif current_mode = STREAM_IN then 
-                next_state <= stream_in_state;
+                next_state <= stream_write_to_fx3_state;
             else 
                 next_state <= idle_state;
             end if;
@@ -508,11 +506,11 @@ process(current_state, current_mode) begin
             if current_mode /= LOOPBACK then
                 next_state <= idle_state;
             end if;
-        when stream_out_state => 
+        when stream_read_from_fx3_state => 
             if current_mode /= STREAM_OUT then
                 next_state <= idle_state;
             end if;
-        when stream_in_state =>
+        when stream_write_to_fx3_state =>
            if current_mode /= STREAM_IN then
                 next_state <= idle_state;
             end if;
@@ -523,7 +521,7 @@ end process;
 ----------------------------------------------------------------------------------
 -- LCD Main Process
 ----------------------------------------------------------------------------------
-process(lcd_clock50, request_served)
+process(lcd_clock50, lcd_request_served)
 	variable counter : integer range 0 to 50000000 := 1;
 	variable letter_index : integer := 0;
 begin
@@ -532,45 +530,45 @@ begin
 			when idle =>
 				lcd_current_state <= start;
 			when start =>
-				if display_ready = '1' then
+				if lcd_display_ready = '1' then
 					counter := 0;
 					lcd_current_state <= move1;
 				end if;
 			when clearscr =>
 				if counter = 1 then
-					clear <= '1';
-				elsif request_served = '1' then
-					clear <= '0';
+					lcd_clear <= '1';
+				elsif lcd_request_served = '1' then
+					lcd_clear <= '0';
 					lcd_current_state <= move1;
 					counter := 0;
 				end if;
 			when move1 =>
 				if counter = 1 then
-					goto <= "10000000";
-					goto_request <= '1';
-				elsif request_served = '1' and counter > 250000 then
-					goto_request <= '0';
+					lcd_goto <= "10000000";
+					lcd_goto_request <= '1';
+				elsif lcd_request_served = '1' and counter > 250000 then
+					lcd_goto_request <= '0';
 					lcd_current_state <= send1;
 					counter := 0;
 				end if;
 			when send1 =>
 				if counter = 1 then
 					letter_index := letter_index + 1;
-					lcd_data_to_send <= conv_std_logic_vector(character'pos(text_line1(letter_index)), 8);
-					data_request <= '1';
-				elsif request_served = '1' then
-					data_request <= '0';
+					lcd_data_to_send <= conv_std_logic_vector(character'pos(lcd_text_line1(letter_index)), 8);
+					lcd_data_request <= '1';
+				elsif lcd_request_served = '1' then
+					lcd_data_request <= '0';
 					counter := 0;
-					if letter_index = text_line1'length then
+					if letter_index = lcd_text_line1'length then
 						lcd_current_state <= move2;
 					end if;
 				end if;
 			when move2 =>
 				if counter = 1 then
-					goto <= "11000000";
-					goto_request <= '1';
-				elsif request_served = '1' and counter > 250000 then
-					goto_request <= '0';
+					lcd_goto <= "11000000";
+					lcd_goto_request <= '1';
+				elsif lcd_request_served = '1' and counter > 250000 then
+					lcd_goto_request <= '0';
 					lcd_current_state <= send2;
 					counter := 0;
 					letter_index := 0;
@@ -578,12 +576,12 @@ begin
 			when send2 =>
 				if counter = 1 then
 					letter_index := letter_index + 1;
-					lcd_data_to_send <= conv_std_logic_vector(character'pos(text_line2(letter_index)), 8);
-					data_request <= '1';
-				elsif request_served = '1' then
-					data_request <= '0';
+					lcd_data_to_send <= conv_std_logic_vector(character'pos(lcd_text_line2(letter_index)), 8);
+					lcd_data_request <= '1';
+				elsif lcd_request_served = '1' then
+					lcd_data_request <= '0';
 					counter := 0;
-					if letter_index = text_line2'length then
+					if letter_index = lcd_text_line2'length then
 						lcd_current_state <= idle;
 						letter_index := 0;
 					end if;

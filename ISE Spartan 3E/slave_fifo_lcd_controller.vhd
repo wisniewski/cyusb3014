@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------
--- LCD Controller Module
+-- LCD Spartan 3E Controller Module
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -15,14 +15,13 @@ entity lcd_controller is port
 	lcd_rw : out std_logic;
 	lcd_data : out std_logic_vector(3 downto 0);
 	lcd_data_to_send : in std_logic_vector(7 downto 0);
-	data_request : in std_logic;
-	clear : in std_logic;
-	goto : in std_logic_vector(7 downto 0);
-	goto_request : in std_logic;
-	request_served : out std_logic := '0';
-	display_ready : buffer std_logic := '0'
-);
-end lcd_controller;
+	lcd_data_request : in std_logic;
+	lcd_clear : in std_logic;
+	lcd_goto : in std_logic_vector(7 downto 0);
+	lcd_goto_request : in std_logic;
+	lcd_request_served : out std_logic := '0';
+	lcd_display_ready : buffer std_logic := '0'
+); end lcd_controller;
 ----------------------------------------------------------------------------------
 -- Architecture
 ----------------------------------------------------------------------------------
@@ -98,37 +97,37 @@ begin
 ----------------------------------------------------------------------------------
 -- Signals
 ----------------------------------------------------------------------------------
-lcd_rs <= config_register_select when display_ready = '0' else register_select;
+lcd_rs <= config_register_select when lcd_display_ready = '0' else register_select;
 lcd_rw <= '0';
 lcd_data <= ("001" & init_nibble) when configuring = '1' else data_nibble;
 lcd_e <= init_enabled when configuring = '1' else data_enabled;
-send_byte_request <= send_config_byte_request when display_ready = '0' else send_request;
-curr_byte <= config_byte_to_send when display_ready = '0' else byte_to_send;
+send_byte_request <= send_config_byte_request when lcd_display_ready = '0' else send_request;
+curr_byte <= config_byte_to_send when lcd_display_ready = '0' else byte_to_send;
 ----------------------------------------------------------------------------------
 -- Data Write State Machine
 ----------------------------------------------------------------------------------
-process(reset, clock50, data_request, goto_request, clear)
+process(reset, clock50, lcd_data_request, lcd_goto_request, lcd_clear)
 	variable counter : integer range 0 to 300000 := 1;
 begin
 	if reset = '1' then
 		counter := 0;
-	elsif rising_edge(clock50) and display_ready = '1' then
-		request_served <= '0';
+	elsif rising_edge(clock50) and lcd_display_ready = '1' then
+		lcd_request_served <= '0';
 		send_request <= '0';
 		case write_fsm is
 			when idle =>
 				counter := 0;
-				if clear = '1' then
+				if lcd_clear = '1' then
 					write_fsm <= clearing;
 					register_select <= '0';
 					byte_to_send <= "00000001";
 					send_request <= '1';
-				elsif goto_request = '1' then
+				elsif lcd_goto_request = '1' then
 					write_fsm <= moving;
 					register_select <= '0';
-					byte_to_send <= goto;
+					byte_to_send <= lcd_goto;
 					send_request <= '1';
-				elsif data_request = '1' then
+				elsif lcd_data_request = '1' then
 					write_fsm <= writing;
 					register_select <= '1';
 					byte_to_send <= lcd_data_to_send;
@@ -142,17 +141,17 @@ begin
 			when waiting =>
 				if counter > 250000 then
 					write_fsm <= idle;
-					request_served <= '1';
+					lcd_request_served <= '1';
 				end if;
 			when moving =>
 				if byte_sent = '1' then
 					write_fsm <= idle;
-					request_served <= '1';
+					lcd_request_served <= '1';
 				end if;
 			when writing =>
 				if byte_sent = '1' then
 					write_fsm <= idle;
-					request_served <= '1';
+					lcd_request_served <= '1';
 				end if;
 		end case;
 			
@@ -230,11 +229,11 @@ process(reset, clock50, configuring)
 	variable counter : integer range 0 to 110000 := 1; -- We still need to adjust this value
 begin
 	if reset = '1' then
-		display_ready <= '0';
+		lcd_display_ready <= '0';
 		counter := 1;
 		config_fsm <= function_set;
 		config_register_select <= '0';
-	elsif rising_edge(clock50) and configuring = '0' and display_ready = '0' then
+	elsif rising_edge(clock50) and configuring = '0' and lcd_display_ready = '0' then
 		send_config_byte_request <= '0';
 		config_register_select <= '0';
 		case config_fsm is
@@ -269,7 +268,7 @@ begin
 			when finish =>
 				if counter > 100000 then
 					counter := 0;
-					display_ready <= '1';
+					lcd_display_ready <= '1';
 				end if;
 		end case;
 		

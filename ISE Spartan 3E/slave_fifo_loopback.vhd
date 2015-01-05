@@ -9,28 +9,37 @@ use ieee.std_logic_unsigned.all;
 ----------------------------------------------------------------------------------
 -- Entity
 ----------------------------------------------------------------------------------
-entity slave_fifo_loopback is port 
+entity slave_fifo_loopback is 
+generic
 (
-	clock100 				: in std_logic;
-	reset 					: in std_logic;
-	data_loopback_in 	: in std_logic_vector(15 downto 0);
-	data_loopback_out 	: out std_logic_vector(15 downto 0);
-	loopback_mode_active 	: in std_logic;
-	flaga_get 				: in std_logic;
-	flagb_get 				: in std_logic;
-	flagc_get 				: in std_logic;
-	flagd_get 				: in std_logic;
-	slwr_loopback 			: out std_logic;
-	sloe_loopback 			: out std_logic;
-	slrd_loopback 			: out std_logic;
+	DATA_BITS : natural := 16
+);
+port 
+(
+	clock100 : in std_logic;
+	reset : in std_logic;
+	data_loopback_in : in std_logic_vector(DATA_BITS-1 downto 0);
+	data_loopback_out : out std_logic_vector(DATA_BITS-1 downto 0);
+	loopback_mode_active : in std_logic;
+	flaga_get : in std_logic;
+	flagb_get : in std_logic;
+	flagc_get : in std_logic;
+	flagd_get : in std_logic;
+	slwr_loopback : out std_logic;
+	sloe_loopback : out std_logic;
+	slrd_loopback : out std_logic;
 	loopback_address : out std_logic;
 	buffer_empty_show : out std_logic
-);
-end slave_fifo_loopback;
+); end slave_fifo_loopback;
 ----------------------------------------------------------------------------------
 -- Architecture
 ----------------------------------------------------------------------------------
 architecture loopback_arch of slave_fifo_loopback is
+----------------------------------------------------------------------------------
+-- Constants
+----------------------------------------------------------------------------------
+constant DATA_BIT : natural := 16;
+constant CNT_BIT : natural := 2;
 ----------------------------------------------------------------------------------
 -- Signals
 ----------------------------------------------------------------------------------
@@ -40,15 +49,11 @@ signal buffer_full : std_logic;
 signal buffer_empty : std_logic;
 signal buffer_reset : std_logic;
 
-signal rd_oe_delay_cnt				: std_logic_vector(1 downto 0):="00";
-signal oe_delay_cnt					: std_logic_vector(1 downto 0):="00";
-signal data_loopback_in_get : std_logic_vector(15 downto 0);
+signal rd_oe_delay_cnt : std_logic_vector(CNT_BIT-1 downto 0):="00";
+signal oe_delay_cnt : std_logic_vector(CNT_BIT-1 downto 0):="00";
+signal data_loopback_in_get : std_logic_vector(DATA_BIT-1 downto 0);
 
 signal slrd_loopback_get : std_logic;
-signal slrd_loopback_get2 : std_logic;
-signal slrd_loopback_get3 : std_logic;
-signal slrd_loopback_get4 : std_logic;
-signal slrd_loopback_get5 : std_logic;
 signal slwr_loopback_get : std_logic;
 signal sloe_loopback_get : std_logic;
 ----------------------------------------------------------------------------------
@@ -76,10 +81,10 @@ COMPONENT slave_fifo_buffer PORT
 (
     clk : IN STD_LOGIC;
     rst : IN STD_LOGIC;
-    din : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+    din : IN STD_LOGIC_VECTOR(DATA_BIT-1 DOWNTO 0);
     wr_en : IN STD_LOGIC;
     rd_en : IN STD_LOGIC;
-    dout : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
+    dout : OUT STD_LOGIC_VECTOR(DATA_BIT-1 DOWNTO 0);
     full : OUT STD_LOGIC;
     empty : OUT STD_LOGIC
 ); END COMPONENT;
@@ -112,7 +117,7 @@ buffer_empty_show <= buffer_empty;
 -- FIFO Reset Flush
 ----------------------------------------------------------------------------------
 process(current_state, reset) begin
-	if  (reset = '0') then
+	if  (reset = '0') or (current_state = loopback_flush_fifo) then
 		buffer_reset <= '1';
 	else 
 		buffer_reset <= '0';
@@ -159,43 +164,17 @@ process(current_state) begin
 		buffer_read_enable <= '0';
 	end if;
 end process;
-----------------------------------------------------------------------------------
--- SLRD Counter
-----------------------------------------------------------------------------------
-process(clock100, reset)begin
-	if(reset = '0')then
-		slrd_loopback_get5 <= '1';
-		slrd_loopback_get2 <= '1';
-		slrd_loopback_get3 <= '1';
-		slrd_loopback_get4 <= '1';
-	elsif(rising_edge(clock100))then
-		slrd_loopback_get2 <= slrd_loopback_get;
-		slrd_loopback_get3 <= slrd_loopback_get2;
-		slrd_loopback_get4 <= slrd_loopback_get3;
-		slrd_loopback_get5 <= slrd_loopback_get4;
-	end if;	 
-end process;
 --------------------------------------------------------------------
 -- Buffer Write Enable
 ----------------------------------------------------------------------------------
-process(slrd_loopback_get5, loopback_mode_active) begin
-	if (slrd_loopback_get5 = '0') and (loopback_mode_active = '1') then
+process(slrd_loopback_get, loopback_mode_active) begin
+	if (slrd_loopback_get = '0') and (loopback_mode_active = '1') then
 		buffer_write_enable <= '1';
 		data_loopback_in_get <= data_loopback_in;
 	else 
 		buffer_write_enable <= '0';
 	end if;
 end process;
-----------------------------------------------------------------------------------
--- Save data in FIFO
-----------------------------------------------------------------------------------
---process(slrd_loopback_get5) begin
---	if (slrd_loopback_get5 = '0') then
---		data_loopback_in_get <= data_loopback_in;
---	else 
---		data_loopback_in_get <= (others => '0');
---	end if;
---end process;
 ----------------------------------------------------------------------------------
 -- Loopback Address
 ----------------------------------------------------------------------------------
