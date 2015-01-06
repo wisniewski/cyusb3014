@@ -1,0 +1,179 @@
+Release 14.1 par P.15xf (nt64)
+Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
+
+MARIUSZKOMP1::  Tue Jan 06 16:46:18 2015
+
+par -w -intstyle ise -pl high -rl high -xe n -t 1 slave_fifo_main_map.ncd
+slave_fifo_main.ncd slave_fifo_main.pcf 
+
+
+Constraints file: slave_fifo_main.pcf.
+Loading device for application Rf_Device from file '3s500e.nph' in environment C:\Xilinx\14.1\ISE_DS\ISE\.
+   "slave_fifo_main" is an NCD, version 3.2, device xc3s500e, package fg320, speed -4
+
+Initializing temperature to 85.000 Celsius. (default - Range: -40.000 to 100.000 Celsius)
+Initializing voltage to 1.140 Volts. (default - Range: 1.140 to 1.320 Volts)
+
+INFO:Par:282 - No user timing constraints were detected or you have set the option to ignore timing constraints ("par
+   -x"). Place and Route will run in "Performance Evaluation Mode" to automatically improve the performance of all
+   internal clocks in this design. Because there are not defined timing requirements, a timing score will not be
+   reported in the PAR report in this mode. The PAR timing summary will list the performance achieved for each clock.
+   Note: For the fastest runtime, set the effort level to "std".  For best performance, set the effort level to "high".
+
+Device speed data version:  "PRODUCTION 1.27 2012-04-23".
+
+
+
+Design Summary Report:
+
+ Number of External IOBs                          44 out of 232    18%
+
+   Number of External Input IOBs                  8
+
+      Number of External Input IBUFs              8
+        Number of LOCed External Input IBUFs      8 out of 8     100%
+
+
+   Number of External Output IOBs                20
+
+      Number of External Output IOBs             20
+        Number of LOCed External Output IOBs     20 out of 20    100%
+
+
+   Number of External Bidir IOBs                 16
+
+      Number of External Bidir IOBs              16
+        Number of LOCed External Bidir IOBs      16 out of 16    100%
+
+
+   Number of BUFGMUXs                        2 out of 24      8%
+   Number of DCMs                            1 out of 4      25%
+   Number of RAMB16s                         1 out of 20      5%
+   Number of Slices                        500 out of 4656   10%
+      Number of SLICEMs                      0 out of 2328    0%
+
+
+
+Overall effort level (-ol):   Not applicable because -pl and -rl switches are used
+Router effort level (-rl):    High 
+
+Starting initial Timing Analysis.  REAL time: 4 secs 
+Finished initial Timing Analysis.  REAL time: 4 secs 
+
+WARNING:Par:288 - The signal reset_from_fx3_IBUF has no load.  PAR will not attempt to route this signal.
+Starting Router
+
+
+Phase  1  : 3200 unrouted;      REAL time: 9 secs 
+
+Phase  2  : 2805 unrouted;      REAL time: 10 secs 
+
+Phase  3  : 458 unrouted;      REAL time: 10 secs 
+
+Phase  4  : 522 unrouted; (Par is working to improve performance)     REAL time: 12 secs 
+
+Phase  5  : 0 unrouted; (Par is working to improve performance)     REAL time: 12 secs 
+
+Updating file: slave_fifo_main.ncd with current fully routed design.
+
+Phase  6  : 0 unrouted; (Par is working to improve performance)     REAL time: 12 secs 
+
+Phase  7  : 0 unrouted; (Par is working to improve performance)     REAL time: 16 secs 
+
+Phase  8  : 0 unrouted; (Par is working to improve performance)     REAL time: 17 secs 
+
+Phase  9  : 0 unrouted; (Par is working to improve performance)     REAL time: 17 secs 
+
+Phase 10  : 0 unrouted; (Par is working to improve performance)     REAL time: 17 secs 
+
+Phase 11  : 0 unrouted; (Par is working to improve performance)     REAL time: 17 secs 
+WARNING:Route:455 - CLK Net:clock100_out_OBUF may have excessive skew because 
+      0 CLK pins and 1 NON_CLK pins failed to route using a CLK template.
+WARNING:Route:455 - CLK Net:sloe_loopback may have excessive skew because 
+      0 CLK pins and 2 NON_CLK pins failed to route using a CLK template.
+
+Total REAL time to Router completion: 17 secs 
+Total CPU time to Router completion: 17 secs 
+
+Partition Implementation Status
+-------------------------------
+
+  No Partitions were found in this design.
+
+-------------------------------
+
+Generating "PAR" statistics.
+
+**************************
+Generating Clock Report
+**************************
+
++---------------------+--------------+------+------+------------+-------------+
+|        Clock Net    |   Resource   |Locked|Fanout|Net Skew(ns)|Max Delay(ns)|
++---------------------+--------------+------+------+------------+-------------+
+|         lcd_clock50 | BUFGMUX_X2Y11| No   |  167 |  0.049     |  0.173      |
++---------------------+--------------+------+------+------------+-------------+
+|   clock100_out_OBUF | BUFGMUX_X1Y10| No   |  153 |  0.078     |  0.201      |
++---------------------+--------------+------+------+------------+-------------+
+|       sloe_loopback |         Local|      |   18 |  0.092     |  1.990      |
++---------------------+--------------+------+------+------------+-------------+
+|stream_out_mode_acti |              |      |      |            |             |
+|                  ve |         Local|      |   16 |  0.379     |  2.257      |
++---------------------+--------------+------+------+------------+-------------+
+
+* Net Skew is the difference between the minimum and maximum routing
+only delays for the net. Note this is different from Clock Skew which
+is reported in TRCE timing report. Clock Skew is the difference between
+the minimum and maximum path delays which includes logic delays.
+
+* The fanout is the number of component pins not the individual BEL loads,
+for example SLICE loads not FF loads.
+
+Timing Score: 0 (Setup: 0, Hold: 0)
+
+Asterisk (*) preceding a constraint indicates it was not met.
+   This may be due to a setup or hold violation.
+
+----------------------------------------------------------------------------------------------------------
+  Constraint                                |    Check    | Worst Case |  Best Case | Timing |   Timing   
+                                            |             |    Slack   | Achievable | Errors |    Score   
+----------------------------------------------------------------------------------------------------------
+  Autotimespec constraint for clock net lcd | SETUP       |         N/A|     9.284ns|     N/A|           0
+  _clock50                                  | HOLD        |     1.139ns|            |       0|           0
+----------------------------------------------------------------------------------------------------------
+  Autotimespec constraint for clock net clo | SETUP       |         N/A|     7.014ns|     N/A|           0
+  ck100_out_OBUF                            | HOLD        |     0.987ns|            |       0|           0
+----------------------------------------------------------------------------------------------------------
+
+
+All constraints were met.
+INFO:Timing:2761 - N/A entries in the Constraints List may indicate that the 
+   constraint is not analyzed due to the following: No paths covered by this 
+   constraint; Other constraints intersect with this constraint; or This 
+   constraint was disabled by a Path Tracing Control. Please run the Timespec 
+   Interaction Report (TSI) via command line (trce tsi) or Timing Analyzer GUI.
+
+
+Generating Pad Report.
+
+All signals are completely routed.
+
+WARNING:Par:283 - There are 1 loadless signals in this design. This design will cause Bitgen to issue DRC warnings.
+
+Total REAL time to PAR completion: 18 secs 
+Total CPU time to PAR completion: 18 secs 
+
+Peak Memory Usage:  272 MB
+
+Placer: Placement generated during map.
+Routing: Completed - No errors found.
+
+Number of error messages: 0
+Number of warning messages: 5
+Number of info messages: 1
+
+Writing design to file slave_fifo_main.ncd
+
+
+
+PAR done!

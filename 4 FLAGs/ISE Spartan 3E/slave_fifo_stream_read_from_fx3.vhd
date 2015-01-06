@@ -149,13 +149,13 @@ process(current_state, flagc_get, flagd_get, stream_out_mode_active) begin
 		when stream_out_flagc_rcvd =>
 			next_state <= stream_out_wait_flagd;
 		when stream_out_wait_flagd =>
-			if (flagc_get = '1') then
+			if (flagd_get = '1') then
 				next_state <= stream_out_read;
 			else 
 				next_state <= stream_out_wait_flagd;
 			end if;
 		when stream_out_read =>
-			if (flagc_get = '0') then
+			if (flagd_get = '0') then
 				next_state <= stream_out_read_rd_oe_delay;
 			else 
 				next_state <= stream_out_read;

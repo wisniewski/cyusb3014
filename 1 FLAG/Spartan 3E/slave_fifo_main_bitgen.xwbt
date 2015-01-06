@@ -1,0 +1,8 @@
+INTSTYLE=ise
+INFILE=C:\Users\MariuszKomp\Desktop\Praca inzynierska\08 Oprogramowanie\2FLAGs\Spartan 3E\slave_fifo_main.ncd
+OUTFILE=C:\Users\MariuszKomp\Desktop\Praca inzynierska\08 Oprogramowanie\2FLAGs\Spartan 3E\slave_fifo_main.bit
+FAMILY=Spartan3E
+PART=xc3s500e-4fg320
+WORKINGDIR=C:\Users\MariuszKomp\Desktop\Praca inzynierska\08 Oprogramowanie\2FLAGs\Spartan 3E
+LICENSE=WebPack
+USER_INFO=210861677_0_0_816

@@ -1,0 +1,2 @@
+# Output products list for <slave_fifo_dcm_2flags>
+slave_fifo_dcm_2flags_flist.txt

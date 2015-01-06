@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<GPIFIIModelConstraint xmlns="http://www.cypress.com/GPIFIIDataSchema/" LibraryMajorNumber="1" LibraryMinorNumber="1">
+  <InterfaceDefination xmlns="">
+    <InterfaceSetting>    
+      <Endianness IsAvailable="true" IsDefaultOptions="true" UIParameterName="Endianness" UIParameterType="RadioButton"/>
+      <DataBusWidth IsAvailable="true" IsDefaultOptions="true" UIParameterName="Data bus width" UIParameterType ="ComboBox">        
+      </DataBusWidth>      
+    </InterfaceSetting>
+  </InterfaceDefination>
+  <Signals xmlns="">
+    <Signal ElementId="FLAG0" DisplayName="FLAGA">
+      <Flags IsAvailable="true" IsDefaultOptions="true" UIParameterName="FLAGA Connected" UIParameterType="ComboBox"/>
+    </Signal>
+    <Signal ElementId="FLAG1" DisplayName="FLAGB">
+      <Flags IsAvailable="true" IsDefaultOptions="true" UIParameterName="FLAGB Connected" UIParameterType="ComboBox"/>
+    </Signal>
+  </Signals>
+</GPIFIIModelConstraint>

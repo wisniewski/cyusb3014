@@ -1,9 +1,30 @@
-/ISE Spartan 3E/*
-/stream_in_out_auto_manual_dma/Debug/*
-/stream_in_out_auto_manual_dma/Release/*
-/loopback_auto_manual_dma/Debug/*
-/loopback_auto_manual_dma/Release/*
-/GPIF II/original_sync_slave_fifo_2bit.cydsn/documentation/*
-/.metadata/*
-!/ISE Spartan 3E/*.vhd
-!/ISE Spartan 3E/*.ucf
+/1 FLAG/ISE Spartan 3E/*
+/2 FLAGs/ISE Spartan 3E/*
+/4 FLAGs/ISE Spartan 3E/*
+
+!/1 FLAG/ISE Spartan 3E/*.vhd
+!/2 FLAGs/ISE Spartan 3E/*.vhd
+!/4 FLAGs/ISE Spartan 3E/*.vhd
+!/1 FLAG/ISE Spartan 3E/*.ucf
+!/2 FLAGs/ISE Spartan 3E/*.ucf
+!/4 FLAGs/ISE Spartan 3E/*.ucf
+
+/1 FLAG/FX3 Loopback Auto-Manual DMA/Debug*
+/2 FLAGs/FX3 Loopback Auto-Manual DMA/Debug*
+/4 FLAGs/FX3 Loopback Auto-Manual DMA/Debug*
+/1 FLAG/FX3 Loopback Auto-Manual DMA/Release*
+/2 FLAGs/FX3 Loopback Auto-Manual DMA/Release*
+/4 FLAGs/FX3 Loopback Auto-Manual DMA/Release*
+
+/1 FLAG/FX3 Stream Auto-Manual DMA/Debug*
+/2 FLAGs/FX3 Stream Auto-Manual DMA/Debug*
+/4 FLAGs/FX3 Stream Auto-Manual DMA/Debug*
+/1 FLAG/FX3 Stream Auto-Manual DMA/Release*
+/2 FLAGs/FX3 Stream Auto-Manual DMA/Release*
+/4 FLAGs/FX3 Stream Auto-Manual DMA/Release*
+
+/1 FLAG/GPIF II/original_sync_slave_fifo_2bit.cydsn/documentation/*
+/2 FLAGs/GPIF II/original_sync_slave_fifo_2bit.cydsn/documentation/*
+/4 FLAGs/GPIF II/original_sync_slave_fifo_2bit.cydsn/documentation/*
+
+
