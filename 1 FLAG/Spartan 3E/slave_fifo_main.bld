@@ -7,8 +7,8 @@ slave_fifo_pins_2flags.ucf -p xc3s500e-fg320-4 slave_fifo_main.ngc
 slave_fifo_main.ngd
 
 Reading NGO file "C:/Users/MariuszKomp/Desktop/Praca inzynierska/08
-Oprogramowanie/2FLAGs/Spartan 3E/slave_fifo_main.ngc" ...
-Loading design module "ipcore_dir/slave_fifo_buffer_2flags.ngc"...
+Oprogramowanie/1 FLAG/Spartan 3E/slave_fifo_main.ngc" ...
+Loading design module "ipcore_dir/slave_fifo_buffer_1flag.ngc"...
 Gathering constraint information from source properties...
 Done.
 
@@ -30,10 +30,10 @@ NGDBUILD Design Results Summary:
   Number of errors:     0
   Number of warnings:   0
 
-Total memory usage is 174516 kilobytes
+Total memory usage is 174508 kilobytes
 
 Writing NGD file "slave_fifo_main.ngd" ...
-Total REAL time to NGDBUILD completion:  5 sec
-Total CPU time to NGDBUILD completion:   5 sec
+Total REAL time to NGDBUILD completion:  4 sec
+Total CPU time to NGDBUILD completion:   4 sec
 
 Writing NGDBUILD log file "slave_fifo_main.bld"...

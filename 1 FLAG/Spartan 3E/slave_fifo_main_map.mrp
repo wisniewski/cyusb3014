@@ -3,47 +3,64 @@ Xilinx Mapping Report File for Design 'slave_fifo_main'
 
 Design Information
 ------------------
-Command Line   : map -intstyle ise -p xc3s500e-fg320-4 -timing -logic_opt off
--ol high -xe n -t 1 -register_duplication off -cm area -ir off -pr b -power off
--o slave_fifo_main_map.ncd slave_fifo_main.ngd slave_fifo_main.pcf 
+Command Line   : map -intstyle ise -p xc3s500e-fg320-4 -cm area -ir off -pr off
+-c 100 -o slave_fifo_main_map.ncd slave_fifo_main.ngd slave_fifo_main.pcf 
 Target Device  : xc3s500e
 Target Package : fg320
 Target Speed   : -4
 Mapper Version : spartan3e -- $Revision: 1.55 $
-Mapped Date    : Tue Jan 06 16:46:02 2015
+Mapped Date    : Sun Jan 11 15:40:24 2015
 
 Design Summary
 --------------
 Number of errors:      0
-Number of warnings:  335
+Number of warnings:    4
 Logic Utilization:
-  Total Number Slice Registers:         387 out of   9,312    4%
-    Number used as Flip Flops:          355
-    Number used as Latches:              32
-  Number of 4 input LUTs:               645 out of   9,312    6%
+  Total Number Slice Registers:         372 out of   9,312    3%
+    Number used as Flip Flops:          324
+    Number used as Latches:              48
+  Number of 4 input LUTs:               660 out of   9,312    7%
 Logic Distribution:
-  Number of occupied Slices:            500 out of   4,656   10%
-    Number of Slices containing only related logic:     500 out of     500 100%
-    Number of Slices containing unrelated logic:          0 out of     500   0%
+  Number of occupied Slices:            406 out of   4,656    8%
+    Number of Slices containing only related logic:     406 out of     406 100%
+    Number of Slices containing unrelated logic:          0 out of     406   0%
       *See NOTES below for an explanation of the effects of unrelated logic.
-  Total Number of 4 input LUTs:         708 out of   9,312    7%
-    Number used as logic:               645
-    Number used as a route-thru:         63
+  Total Number of 4 input LUTs:         724 out of   9,312    7%
+    Number used as logic:               660
+    Number used as a route-thru:         64
 
   The Slice Logic Distribution report is not meaningful if the design is
   over-mapped for a non-slice resource or if Placement fails.
 
-  Number of bonded IOBs:                 44 out of     232   18%
-    IOB Flip Flops:                      43
+  Number of bonded IOBs:                 43 out of     232   18%
+    IOB Flip Flops:                      32
   Number of RAMB16s:                      1 out of      20    5%
   Number of BUFGMUXs:                     2 out of      24    8%
   Number of DCMs:                         1 out of       4   25%
 
-Average Fanout of Non-Clock Nets:                3.40
+Average Fanout of Non-Clock Nets:                3.50
 
-Peak Memory Usage:  296 MB
-Total REAL time to MAP completion:  13 secs 
-Total CPU time to MAP completion:   11 secs 
+Peak Memory Usage:  269 MB
+Total REAL time to MAP completion:  4 secs 
+Total CPU time to MAP completion:   2 secs 
+
+NOTES:
+
+   Related logic is defined as being logic that shares connectivity - e.g. two
+   LUTs are "related" if they share common inputs.  When assembling slices,
+   Map gives priority to combine logic that is related.  Doing so results in
+   the best timing performance.
+
+   Unrelated logic shares no connectivity.  Map will only begin packing
+   unrelated logic into a slice once 99% of the slices are occupied through
+   related logic packing.
+
+   Note that once logic distribution reaches the 99% level through related
+   logic packing, this does not mean the device is completely utilized.
+   Unrelated logic packing will then begin, continuing until all usable LUTs
+   and FFs are occupied.  Depending on your timing budget, increased levels of
+   unrelated logic packing may adversely affect the overall timing performance
+   of your design.
 
 Table of Contents
 -----------------
@@ -66,1002 +83,15 @@ Section 1 - Errors
 
 Section 2 - Warnings
 --------------------
-WARNING:Pack:2780 - The register "letter_index_20" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_12" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_21" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_13" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_30" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_22" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_14" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_31" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_23" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_15" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_24" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_16" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_25" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_17" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_26" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_18" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_27" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_19" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_28" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_29" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/config_fsm_FSM_FFd1" has
-   the property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/config_fsm_FSM_FFd2" has
-   the property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/config_fsm_FSM_FFd3" has
-   the property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/data_tmp_0" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/data_tmp_1" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/data_tmp_2" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/data_tmp_3" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/data_tmp_4" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/data_tmp_5" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/data_tmp_6" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/data_tmp_7" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/write_fsm_FSM_FFd1" has
-   the property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/write_fsm_FSM_FFd2" has
-   the property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/write_fsm_FSM_FFd3" has
-   the property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/send_byte_fsm_FSM_FFd1"
-   has the property IOB=TRUE, but it did not join an IO component because it is
-   not connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/send_byte_fsm_FSM_FFd2"
-   has the property IOB=TRUE, but it did not join an IO component because it is
-   not connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/send_byte_fsm_FSM_FFd3"
-   has the property IOB=TRUE, but it did not join an IO component because it is
-   not connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/send_byte_fsm_FSM_FFd4"
-   has the property IOB=TRUE, but it did not join an IO component because it is
-   not connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/send_byte_fsm_FSM_FFd5"
-   has the property IOB=TRUE, but it did not join an IO component because it is
-   not connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/send_byte_fsm_FSM_FFd6"
-   has the property IOB=TRUE, but it did not join an IO component because it is
-   not connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/send_byte_fsm_FSM_FFd7"
-   has the property IOB=TRUE, but it did not join an IO component because it is
-   not connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/wait_time_10" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/wait_time_12" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/wait_time_13" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/wait_time_16" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/wait_time_17" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/current_state_FSM_FFd2_BRB0" has
-   the property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/current_state_FSM_FFd2_BRB1" has
-   the property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/config_byte_to_send_0" has
-   the property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/config_byte_to_send_1" has
-   the property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/config_byte_to_send_2" has
-   the property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/config_byte_to_send_3" has
-   the property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/config_byte_to_send_5" has
-   the property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register
-   "int_stream_read_from_fx3/current_state_FSM_FFd1" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register
-   "int_stream_read_from_fx3/current_state_FSM_FFd2" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register
-   "int_stream_read_from_fx3/current_state_FSM_FFd3" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/send_config_byte_request"
-   has the property IOB=TRUE, but it did not join an IO component because it is
-   not connected to any IO element.
-WARNING:Pack:2780 - The register "lcd_goto_request" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/init_fsm_FSM_FFd1" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/init_fsm_FSM_FFd2" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/init_fsm_FSM_FFd3" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/init_fsm_FSM_FFd4" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/init_fsm_FSM_FFd5" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/data_enabled" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register
-   "inst_stream_write_to_fx3/current_state_FSM_FFd1" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register
-   "inst_stream_write_to_fx3/current_state_FSM_FFd2" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "counter_0" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_1" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_2" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_3" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_4" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_5" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_6" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_7" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_8" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_9" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "lcd_current_state_FSM_FFd1" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_current_state_FSM_FFd2" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_current_state_FSM_FFd3" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/data_loopback_in_get_10" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/data_loopback_in_get_11" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/data_loopback_in_get_12" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/data_loopback_in_get_13" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/data_loopback_in_get_14" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/data_loopback_in_get_15" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/lcd_display_ready" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/configuring" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/register_select" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter0_0" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter0_1" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter0_2" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter0_3" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter0_4" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter1_0" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter0_5" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter1_1" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter0_6" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter1_2" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter0_7" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter1_3" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter0_8" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter1_4" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter2_0" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter0_9" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter1_5" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter2_1" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter1_6" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter2_2" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter1_7" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter2_3" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter1_8" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter2_4" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter1_9" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter2_5" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter2_6" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter2_7" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter2_8" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter2_9" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/data_nibble_0" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/data_nibble_1" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/data_nibble_2" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/data_nibble_3" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter_10" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter_11" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter_12" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter_13" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter_14" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter_15" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter_16" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter_17" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter_18" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/rd_oe_delay_cnt_0" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/rd_oe_delay_cnt_1" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/lcd_request_served" has
-   the property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/byte_to_send_0" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/byte_to_send_1" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/byte_to_send_2" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/byte_to_send_3" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/byte_to_send_4" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/byte_to_send_5" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/byte_to_send_6" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/byte_to_send_7" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "current_state_FSM_FFd1_1" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "current_state_FSM_FFd2_1" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_0_BRB0" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_0_BRB1" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_0_BRB3" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_0_BRB4" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_0_BRB5" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_0_BRB6" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_0_BRB7" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_1_BRB0" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_1_BRB1" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_1_BRB2" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_1_BRB3" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line2_7_0_BRB0" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line2_7_0_BRB1" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line2_7_0_BRB3" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_2_BRB0" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_2_BRB1" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_2_BRB2" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_2_BRB3" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_goto_6" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_3_BRB0" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_3_BRB1" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_3_BRB2" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_3_BRB3" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_4_BRB0" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_4_BRB1" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_4_BRB2" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_4_BRB3" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_5_BRB0" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_5_BRB1" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_5_BRB2" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_5_BRB3" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line2_8_0_BRB0" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line2_8_0_BRB1" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line2_8_0_BRB2" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line2_8_0_BRB3" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_6_BRB0" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_6_BRB1" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_6_BRB2" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_data_to_send_6_BRB3" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/init_enabled" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "current_state_FSM_FFd1" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "current_state_FSM_FFd2" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line2_11_0_BRB1" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line2_11_0_BRB2" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line2_11_0_BRB3" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register
-   "int_stream_read_from_fx3/data_stream_out_to_show_10" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register
-   "int_stream_read_from_fx3/data_stream_out_to_show_11" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register
-   "int_stream_read_from_fx3/data_stream_out_to_show_12" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register
-   "int_stream_read_from_fx3/data_stream_out_to_show_13" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register
-   "int_stream_read_from_fx3/data_stream_out_to_show_14" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register
-   "int_stream_read_from_fx3/data_stream_out_to_show_15" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line2_12_0_BRB0" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line2_12_0_BRB3" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/send_request" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line1_10_1" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line1_10_4" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line1_13_1" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line1_14_0" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line1_14_1" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line1_15_5" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line2_10_0" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line2_13_0" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line2_14_0" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line2_15_4" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter0_10" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter0_11" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter0_12" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter0_13" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter0_14" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter0_15" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter0_16" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter0_17" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter0_18" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter1_10" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter0_19" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter1_11" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter1_12" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter1_13" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter1_14" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter1_15" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter1_16" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter2_10" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter2_11" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter2_12" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter2_13" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter2_14" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter2_15" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line2_15_0_BRB2" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line2_15_0_BRB3" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line2_16_0_BRB1" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line2_16_0_BRB3" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter_0" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter_1" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter_2" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter_3" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter_4" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter_5" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter_6" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter_7" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter_8" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/counter_9" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/wait_time_3" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/wait_time_4" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/wait_time_6" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/wait_time_8" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/wait_time_9" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "counter_10" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_11" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_20" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_12" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_21" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_13" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_22" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_14" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_23" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_15" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_24" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_16" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_25" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_17" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_18" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "counter_19" has the property IOB=TRUE, but it
-   did not join an IO component because it is not connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/times_sent_number_three_0"
-   has the property IOB=TRUE, but it did not join an IO component because it is
-   not connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/times_sent_number_three_1"
-   has the property IOB=TRUE, but it did not join an IO component because it is
-   not connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/byte_sent" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line1_13_5_1" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/data_loopback_in_get_0" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/data_loopback_in_get_1" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/data_loopback_in_get_2" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/data_loopback_in_get_3" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/data_loopback_in_get_4" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/data_loopback_in_get_5" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/data_loopback_in_get_6" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/data_loopback_in_get_7" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/data_loopback_in_get_8" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/data_loopback_in_get_9" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "lcd_text_line2_1_0" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "lcd_text_line2_2_0" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "lcd_text_line2_3_0" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "lcd_text_line1_6_4" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "lcd_text_line2_4_0" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "lcd_text_line1_8_0" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "lcd_text_line1_8_1" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "lcd_text_line1_8_2" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "lcd_text_line2_5_0" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "lcd_text_line1_8_4" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "lcd_text_line1_8_6" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "lcd_text_line2_6_0" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "lcd_text_line2_9_0" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "lcd_text_line2_9_1" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "lcd_text_line2_9_4" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "inst_stream_write_to_fx3/data_stream_in_get_0"
-   has the property IOB=TRUE, but it did not join an IO component because it is
-   not connected to any IO element.
-WARNING:Pack:2780 - The register "inst_stream_write_to_fx3/data_stream_in_get_4"
-   has the property IOB=TRUE, but it did not join an IO component because it is
-   not connected to any IO element.
-WARNING:Pack:2780 - The register "inst_stream_write_to_fx3/data_stream_in_get_6"
-   has the property IOB=TRUE, but it did not join an IO component because it is
-   not connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/current_state_FSM_FFd1" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/current_state_FSM_FFd3" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/current_state_FSM_FFd4" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/current_state_FSM_FFd5" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/current_state_FSM_FFd6" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/current_state_FSM_FFd7" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/current_state_FSM_FFd8" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_loopback/current_state_FSM_FFd9" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "lcd_data_request" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "int_stream_read_from_fx3/oe_delay_cnt_0" has
-   the property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "int_stream_read_from_fx3/oe_delay_cnt_1" has
-   the property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register "inst_lcd_controller/init_nibble" has the
-   property IOB=TRUE, but it did not join an IO component because it is not
-   connected to any IO element.
-WARNING:Pack:2780 - The register
-   "int_stream_read_from_fx3/data_stream_out_to_show_0" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register
-   "int_stream_read_from_fx3/data_stream_out_to_show_1" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register
-   "int_stream_read_from_fx3/data_stream_out_to_show_2" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register
-   "int_stream_read_from_fx3/data_stream_out_to_show_3" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register
-   "int_stream_read_from_fx3/data_stream_out_to_show_4" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register
-   "int_stream_read_from_fx3/data_stream_out_to_show_5" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register
-   "int_stream_read_from_fx3/data_stream_out_to_show_6" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register
-   "int_stream_read_from_fx3/data_stream_out_to_show_7" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register
-   "int_stream_read_from_fx3/data_stream_out_to_show_8" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register
-   "int_stream_read_from_fx3/data_stream_out_to_show_9" has the property
-   IOB=TRUE, but it did not join an IO component because it is not connected to
-   any IO element.
-WARNING:Pack:2780 - The register "letter_index_0" has the property IOB=TRUE, but
-   it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_1" has the property IOB=TRUE, but
-   it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_2" has the property IOB=TRUE, but
-   it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_3" has the property IOB=TRUE, but
-   it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_4" has the property IOB=TRUE, but
-   it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_5" has the property IOB=TRUE, but
-   it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_6" has the property IOB=TRUE, but
-   it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_7" has the property IOB=TRUE, but
-   it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_8" has the property IOB=TRUE, but
-   it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_9" has the property IOB=TRUE, but
-   it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_10" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:Pack:2780 - The register "letter_index_11" has the property IOB=TRUE,
-   but it did not join an IO component because it is not connected to any IO
-   element.
-WARNING:PhysDesignRules:372 - Gated clock. Clock net sloe_loopback is sourced by
-   a combinatorial pin. This is not good design practice. Use the CE pin to
-   control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net data_out_get_not0001 is
+   sourced by a combinatorial pin. This is not good design practice. Use the CE
+   pin to control the loading of data into the flip-flop.
 WARNING:PhysDesignRules:372 - Gated clock. Clock net stream_out_mode_active is
    sourced by a combinatorial pin. This is not good design practice. Use the CE
    pin to control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:372 - Gated clock. Clock net slrd_loopback is sourced by
+   a combinatorial pin. This is not good design practice. Use the CE pin to
+   control the loading of data into the flip-flop.
 WARNING:PhysDesignRules:367 - The signal <reset_from_fx3_IBUF> is incomplete.
    The signal does not drive any load pins in the design.
 
@@ -1077,11 +107,6 @@ INFO:MapLib:562 - No environment variables are currently set.
 INFO:LIT:244 - All of the single ended outputs in this design are using slew
    rate limited output drivers. The delay on speed critical single ended outputs
    can be dramatically reduced by designating them as fast outputs.
-INFO:Pack:1716 - Initializing temperature to 85.000 Celsius. (default - Range:
-   -40.000 to 100.000 Celsius)
-INFO:Pack:1720 - Initializing voltage to 1.140 Volts. (default - Range: 1.140 to
-   1.320 Volts)
-INFO:Pack:1650 - Map created a placed design.
 
 Section 4 - Removed Logic Summary
 ---------------------------------
@@ -1126,8 +151,8 @@ Section 6 - IOB Properties
 | IOB Name                           | Type             | Direction | IO Standard          | Diff  | Drive    | Slew | Reg (s)      | Resistor | IOB      |
 |                                    |                  |           |                      | Term  | Strength | Rate |              |          | Delay    |
 +---------------------------------------------------------------------------------------------------------------------------------------------------------+
-| address<0>                         | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW | OFF1         |          | 0 / 0    |
-| address<1>                         | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW | OFF1         |          | 0 / 0    |
+| address<0>                         | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW |              |          | 0 / 0    |
+| address<1>                         | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW |              |          | 0 / 0    |
 | clock50                            | IBUF             | INPUT     | LVCMOS33             |       |          |      |              |          | 0 / 0    |
 | clock100_out                       | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW |              |          | 0 / 0    |
 | data<0>                            | IOB              | BIDIR     | LVCMOS33             |       | 12       | SLOW | IFF1         |          | 0 / 3    |
@@ -1162,8 +187,7 @@ Section 6 - IOB Properties
 |                                    |                  |           |                      |       |          |      | OFF1         |          |          |
 | data<15>                           | IOB              | BIDIR     | LVCMOS33             |       | 12       | SLOW | IFF1         |          | 0 / 3    |
 |                                    |                  |           |                      |       |          |      | OFF1         |          |          |
-| flaga                              | IBUF             | INPUT     | LVCMOS33             |       |          |      | IFF1         |          | 0 / 3    |
-| flagb                              | IBUF             | INPUT     | LVCMOS33             |       |          |      | IFF1         |          | 0 / 3    |
+| flag                               | IBUF             | INPUT     | LVCMOS33             |       |          |      |              |          | 0 / 0    |
 | lcd_data<0>                        | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW |              |          | 0 / 0    |
 | lcd_data<1>                        | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW |              |          | 0 / 0    |
 | lcd_data<2>                        | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW |              |          | 0 / 0    |
@@ -1179,13 +203,13 @@ Section 6 - IOB Properties
 | reset_from_fx3                     | IBUF             | INPUT     | LVCMOS33             |       |          |      |              |          | 0 / 0    |
 | reset_from_slide                   | IBUF             | INPUT     | LVCMOS33             |       |          |      |              |          | 0 / 0    |
 | reset_to_fx3                       | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW |              |          | 0 / 0    |
-| slcs                               | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW | OFF1         |          | 0 / 0    |
-| slide_select_mode<0>               | IBUF             | INPUT     | LVCMOS33             |       |          |      | IFF1         |          | 0 / 3    |
-| slide_select_mode<1>               | IBUF             | INPUT     | LVCMOS33             |       |          |      | IFF1         |          | 0 / 3    |
-| slide_select_mode<2>               | IBUF             | INPUT     | LVCMOS33             |       |          |      | IFF1         |          | 0 / 3    |
-| sloe                               | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW | OFF1         |          | 0 / 0    |
-| slrd                               | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW | OFF1         |          | 0 / 0    |
-| slwr                               | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW | OFF1         |          | 0 / 0    |
+| slcs                               | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW |              |          | 0 / 0    |
+| slide_select_mode<0>               | IBUF             | INPUT     | LVCMOS33             |       |          |      |              |          | 0 / 0    |
+| slide_select_mode<1>               | IBUF             | INPUT     | LVCMOS33             |       |          |      |              |          | 0 / 0    |
+| slide_select_mode<2>               | IBUF             | INPUT     | LVCMOS33             |       |          |      |              |          | 0 / 0    |
+| sloe                               | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW |              |          | 0 / 0    |
+| slrd                               | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW |              |          | 0 / 0    |
+| slwr                               | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW |              |          | 0 / 0    |
 +---------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 Section 7 - RPMs
@@ -1214,15 +238,7 @@ Area Group Information
 
 Section 10 - Timing Report
 --------------------------
-A logic-level (pre-route) timing report can be generated by using Xilinx static
-timing analysis tools, Timing Analyzer (GUI) or TRCE (command line), with the
-mapped NCD and PCF files. Please note that this timing report will be generated
-using estimated delay information. For accurate numbers, please generate a
-timing report with the post Place and Route NCD file.
-
-For more information about the Timing Analyzer, consult the Xilinx Timing
-Analyzer Reference Manual; for more information about TRCE, consult the Xilinx
-Command Line Tools User Guide "TRACE" chapter.
+This design was not run using timing mode.
 
 Section 11 - Configuration String Details
 -----------------------------------------

@@ -604,8 +604,8 @@ void CyFxSlFifoApplnInit(void)
     }
 
     //edit
-    //CyU3PGpifSocketConfigure(0, CY_U3P_PIB_SOCKET_0, 0, CyFalse, 1);
-    //CyU3PGpifSocketConfigure(1, CY_U3P_PIB_SOCKET_1, 0, CyFalse, 1);
+    //CyU3PGpifSocketConfigure(0, CY_U3P_PIB_SOCKET_0, 3, CyFalse, 1);
+    //CyU3PGpifSocketConfigure(3, CY_U3P_PIB_SOCKET_3, 3, CyFalse, 1);
 
     /* Start the state machine. */
     apiRetStatus = CyU3PGpifSMStart(RESET, ALPHA_RESET); //edit

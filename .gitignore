@@ -1,12 +1,14 @@
-/1 FLAG/ISE Spartan 3E/*
-/2 FLAGs/ISE Spartan 3E/*
+/.metadata/*
+
+/1 FLAG/Spartan 3E/*
+/2 FLAGs/Spartan 3E/*
 /4 FLAGs/ISE Spartan 3E/*
 
-!/1 FLAG/ISE Spartan 3E/*.vhd
-!/2 FLAGs/ISE Spartan 3E/*.vhd
+!/1 FLAG/Spartan 3E/*.vhd
+!/2 FLAGs/Spartan 3E/*.vhd
 !/4 FLAGs/ISE Spartan 3E/*.vhd
-!/1 FLAG/ISE Spartan 3E/*.ucf
-!/2 FLAGs/ISE Spartan 3E/*.ucf
+!/1 FLAG/Spartan 3E/*.ucf
+!/2 FLAGs/Spartan 3E/*.ucf
 !/4 FLAGs/ISE Spartan 3E/*.ucf
 
 /1 FLAG/FX3 Loopback Auto-Manual DMA/Debug*
@@ -27,4 +29,5 @@
 /2 FLAGs/GPIF II/original_sync_slave_fifo_2bit.cydsn/documentation/*
 /4 FLAGs/GPIF II/original_sync_slave_fifo_2bit.cydsn/documentation/*
 
-
+/Praca dyplomowa/*
+!/Praca dyplomowa/Praca_dyplomowa.docx

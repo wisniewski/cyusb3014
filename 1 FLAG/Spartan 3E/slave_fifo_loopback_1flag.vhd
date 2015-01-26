@@ -21,10 +21,7 @@ port
 	data_loopback_in : in std_logic_vector(DATA_BITS-1 downto 0);
 	data_loopback_out : out std_logic_vector(DATA_BITS-1 downto 0);
 	loopback_mode_active : in std_logic;
-	flaga_get : in std_logic;
-	flagb_get : in std_logic;
-	flagc_get : in std_logic;
-	flagd_get : in std_logic;
+	flag_get : in std_logic;
 	slwr_loopback : out std_logic;
 	sloe_loopback : out std_logic;
 	slrd_loopback : out std_logic;
@@ -49,8 +46,9 @@ signal buffer_full : std_logic;
 signal buffer_empty : std_logic;
 signal buffer_reset : std_logic;
 
-signal rd_oe_delay_cnt : std_logic_vector(CNT_BIT-1 downto 0):="00";
-signal oe_delay_cnt : std_logic_vector(CNT_BIT-1 downto 0):="00";
+signal address_cnt : std_logic_vector(CNT_BIT-1 downto 0):="00";
+signal write_end_cnt : std_logic_vector(CNT_BIT-1 downto 0):="00";
+signal read_end_cnt : std_logic_vector(CNT_BIT-1 downto 0):="00";
 signal data_loopback_in_get : std_logic_vector(DATA_BIT-1 downto 0);
 
 signal slrd_loopback_get : std_logic;
@@ -77,7 +75,7 @@ signal current_state, next_state : loopback_states;
 ----------------------------------------------------------------------------------
 -- Components
 ----------------------------------------------------------------------------------
-COMPONENT slave_fifo_buffer PORT 
+COMPONENT slave_fifo_buffer_1flag PORT 
 (
     clk : IN STD_LOGIC;
     rst : IN STD_LOGIC;
@@ -95,7 +93,7 @@ begin
 ----------------------------------------------------------------------------------
 -- Port map
 ----------------------------------------------------------------------------------
-inst_fifo_buffer : slave_fifo_buffer PORT MAP 
+inst_fifo_buffer : slave_fifo_buffer_1flag PORT MAP 
 (
 	clk => clock100,
     rst => buffer_reset,
@@ -116,8 +114,8 @@ buffer_empty_show <= buffer_empty;
 ----------------------------------------------------------------------------------
 -- FIFO Reset Flush
 ----------------------------------------------------------------------------------
-process(current_state, reset) begin
-	if  (reset = '0') or (current_state = loopback_flush_fifo) then
+process(current_state, reset, loopback_mode_active) begin
+	if  (reset = '0') then --or (current_state = loopback_flush_fifo) then
 		buffer_reset <= '1';
 	else 
 		buffer_reset <= '0';
@@ -158,7 +156,7 @@ end process;
 -- Buffer Read Enable
 ----------------------------------------------------------------------------------
 process(current_state, slwr_loopback_get) begin
-	if (current_state = loopback_write) and (slwr_loopback_get = '0') then
+	if (slwr_loopback_get = '0') and (flag_get = '1') then
 		buffer_read_enable <= '1';
 	else 
 		buffer_read_enable <= '0';
@@ -188,34 +186,50 @@ process(current_state) begin
 	end if;
 end process;
 ----------------------------------------------------------------------------------
--- RD OE Delay Counter
+-- Add cnt
 ----------------------------------------------------------------------------------
 process(clock100, reset, current_state) begin
 	if (reset = '0') then
-		rd_oe_delay_cnt <= (others => '0');
+		address_cnt <= (others => '0');
 	elsif (rising_edge(clock100)) then
-		if (current_state = loopback_read) then
-			rd_oe_delay_cnt <= "01";
-		elsif (current_state = loopback_read_rd_oe_delay) and (rd_oe_delay_cnt > 0) then 
-			rd_oe_delay_cnt <= rd_oe_delay_cnt - '1';
+		if (current_state = loopback_idle) or (current_state = loopback_read_rd_oe_delay) then
+			address_cnt <= "10";
+		elsif (current_state = loopback_flagc_rcvd) or (current_state = loopback_wait_flaga) then
+			address_cnt <= address_cnt - '1';
 		else 
-			rd_oe_delay_cnt <= rd_oe_delay_cnt;
+			address_cnt <= address_cnt;
 		end if;
 	end if; 
 end process;
 ----------------------------------------------------------------------------------
--- OE Delay Counter
+-- Write cnt
 ----------------------------------------------------------------------------------
-process(clock100, reset) begin
-	if (reset = '0') then
-		oe_delay_cnt <= (others => '0');
+process(clock100, reset, current_state) begin
+if (reset = '0') then
+		write_end_cnt <= (others => '0');
 	elsif (rising_edge(clock100)) then
-		if (current_state = loopback_read_rd_oe_delay) then
-			oe_delay_cnt <= "10";
-		elsif (current_state = loopback_read_oe_delay) and (oe_delay_cnt > 0) then 
-			oe_delay_cnt <= oe_delay_cnt - '1';
+		if (current_state = loopback_write) then
+			write_end_cnt <= "11";
+		elsif (current_state = loopback_write_wr_delay) then
+			write_end_cnt <= write_end_cnt - '1';
 		else 
-			oe_delay_cnt <= oe_delay_cnt;
+			write_end_cnt <= write_end_cnt;
+		end if;
+	end if; 
+end process;
+----------------------------------------------------------------------------------
+-- Read cnt
+----------------------------------------------------------------------------------
+process(clock100, reset, current_state) begin
+if (reset = '0') then
+		read_end_cnt <= (others => '0');
+	elsif (rising_edge(clock100)) then
+		if (current_state = loopback_read) then
+			read_end_cnt <= "10";
+		elsif (current_state = loopback_read_rd_oe_delay) then
+			read_end_cnt <= read_end_cnt - '1';
+		else 
+			read_end_cnt <= read_end_cnt;
 		end if;
 	end if; 
 end process;
@@ -232,61 +246,57 @@ end process;
 ----------------------------------------------------------------------------------
 -- Loopback Main FSM
 ----------------------------------------------------------------------------------
-process(current_state, loopback_mode_active, flaga_get, flagb_get, flagc_get, flagd_get, rd_oe_delay_cnt, oe_delay_cnt) begin
+process(current_state, loopback_mode_active, flag_get, address_cnt, read_end_cnt, write_end_cnt, buffer_empty) begin
 	next_state <= current_state;
 	case current_state is
 		when loopback_idle =>
-			if (flagc_get = '1') and (loopback_mode_active = '1') then
+			if (flag_get = '1') and (loopback_mode_active = '1') then
 				next_state <= loopback_flagc_rcvd;
 			else 
 				next_state <= loopback_idle;
 			end if;
 		when loopback_flagc_rcvd =>
-			next_state <= loopback_wait_flagd;
+			if (address_cnt = "00") then
+				next_state <= loopback_wait_flagd;
+			else 
+				next_state <= loopback_flagc_rcvd;
+			end if;
 		when loopback_wait_flagd =>
-			if (flagd_get = '1') then
+			if (flag_get = '1') and (buffer_empty = '1') then
 				next_state <= loopback_read;
 			else 
 				next_state <= loopback_wait_flagd;
 			end if;
 		when loopback_read =>
-			if (flagd_get = '0') then
+			if (flag_get = '0') then
 				next_state <= loopback_read_rd_oe_delay;
 			else 
 				next_state <= loopback_read;
 			end if;
 		when loopback_read_rd_oe_delay =>
-			if (rd_oe_delay_cnt = "00") then
-				next_state <= loopback_read_oe_delay;
+			if (read_end_cnt = "00") then
+				next_state <= loopback_wait_flaga;
 			else 
 				next_state <= loopback_read_rd_oe_delay;
 			end if;
-		when loopback_read_oe_delay =>
-			if (oe_delay_cnt = "00") then
-				next_state <= loopback_wait_flaga;
-			else 
-				next_state <= loopback_read_oe_delay;
-			end if;
 		when loopback_wait_flaga =>
-			if (flaga_get = '1') then
-				next_state <= loopback_wait_flagb;
-			else 
-				next_state <= loopback_wait_flaga;
-			end if;
-		when loopback_wait_flagb =>
-			if (flagb_get = '1') then
+			if (flag_get = '1') and (address_cnt = "00") and (buffer_empty = '0') then
 				next_state <= loopback_write;
 			else 
-				next_state <= loopback_wait_flagb;
+				next_state <= loopback_wait_flaga;
 			end if;
 		when loopback_write =>
-			if (flagb_get = '0') then
+			if (flag_get = '0') then
 				next_state <= loopback_write_wr_delay;
 			else 
 				next_state <= loopback_write;
 			end if;
 		when loopback_write_wr_delay =>
-			next_state <= loopback_flush_fifo;
+			if (write_end_cnt = "00") then
+				next_state <= loopback_flush_fifo;
+			else 
+				next_state <= loopback_write_wr_delay;
+			end if;
 		when loopback_flush_fifo =>
 			next_state <= loopback_idle;
 		when others =>

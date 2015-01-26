@@ -8,16 +8,10 @@
 <msg type="info" file="sim" num="172" delta="old" >Generating IP...
 </msg>
 
-<msg type="warning" file="sim" num="0" delta="new" ><arg fmt="%s" index="1">A core named &apos;slave_fifo_buffer_2flags&apos; already exists in the project. Output products for this core may be overwritten.</arg>
-</msg>
-
-<msg type="warning" file="sim" num="0" delta="new" ><arg fmt="%s" index="1">A core named &apos;slave_fifo_buffer_2flags&apos; already exists in the project. Output products for this core may be overwritten.</arg>
-</msg>
-
 <msg type="warning" file="sim" num="0" delta="new" ><arg fmt="%s" index="1">Component fifo_generator_v9_1 does not have a valid model name for VHDL synthesis</arg>
 </msg>
 
-<msg type="info" file="sim" num="0" delta="new" ><arg fmt="%s" index="1">Pre-processing HDL files for &apos;slave_fifo_buffer_2flags&apos;...</arg>
+<msg type="info" file="sim" num="0" delta="new" ><arg fmt="%s" index="1">Pre-processing HDL files for &apos;slave_fifo_buffer_1flag&apos;...</arg>
 </msg>
 
 <msg type="warning" file="sim" num="0" delta="new" ><arg fmt="%s" index="1">BlackBox generator run option &apos;-ifmt&apos; found multiple times. Only the first occurence is considered.</arg>

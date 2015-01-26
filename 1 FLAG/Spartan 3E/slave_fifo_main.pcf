@@ -1,5 +1,5 @@
 //! **************************************************************************
-// Written by: Map P.15xf on Tue Jan 06 16:46:14 2015
+// Written by: Map P.15xf on Sun Jan 11 15:40:27 2015
 //! **************************************************************************
 
 SCHEMATIC START;
@@ -7,6 +7,7 @@ COMP "lcd_data<0>" LOCATE = SITE "R15" LEVEL 1;
 COMP "lcd_data<1>" LOCATE = SITE "R16" LEVEL 1;
 COMP "lcd_data<2>" LOCATE = SITE "P17" LEVEL 1;
 COMP "lcd_data<3>" LOCATE = SITE "M15" LEVEL 1;
+COMP "flag" LOCATE = SITE "A13" LEVEL 1;
 COMP "slcs" LOCATE = SITE "A4" LEVEL 1;
 COMP "address<0>" LOCATE = SITE "F8" LEVEL 1;
 COMP "address<1>" LOCATE = SITE "F12" LEVEL 1;
@@ -24,8 +25,6 @@ COMP "data<7>" LOCATE = SITE "C11" LEVEL 1;
 COMP "data<8>" LOCATE = SITE "B13" LEVEL 1;
 COMP "data<9>" LOCATE = SITE "G9" LEVEL 1;
 COMP "clock50" LOCATE = SITE "C9" LEVEL 1;
-COMP "flaga" LOCATE = SITE "A13" LEVEL 1;
-COMP "flagb" LOCATE = SITE "C5" LEVEL 1;
 COMP "lcd_e" LOCATE = SITE "M18" LEVEL 1;
 COMP "reset_from_slide" LOCATE = SITE "N17" LEVEL 1;
 COMP "data<10>" LOCATE = SITE "B16" LEVEL 1;

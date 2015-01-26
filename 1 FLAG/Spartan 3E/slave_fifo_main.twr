@@ -45,10 +45,10 @@ Setup/Hold to clock clock50
                     |Max Setup to|Max Hold to |                  | Clock  |
 Source              | clk (edge) | clk (edge) |Internal Clock(s) | Phase  |
 --------------------+------------+------------+------------------+--------+
-data<0>             |    7.534(R)|   -3.243(R)|clock100_out_OBUF |   0.000|
+data<0>             |    7.536(R)|   -3.245(R)|clock100_out_OBUF |   0.000|
 data<1>             |    7.532(R)|   -3.241(R)|clock100_out_OBUF |   0.000|
 data<2>             |    7.532(R)|   -3.241(R)|clock100_out_OBUF |   0.000|
-data<3>             |    7.534(R)|   -3.243(R)|clock100_out_OBUF |   0.000|
+data<3>             |    7.536(R)|   -3.245(R)|clock100_out_OBUF |   0.000|
 data<4>             |    7.552(R)|   -3.264(R)|clock100_out_OBUF |   0.000|
 data<5>             |    7.515(R)|   -3.221(R)|clock100_out_OBUF |   0.000|
 data<6>             |    7.536(R)|   -3.246(R)|clock100_out_OBUF |   0.000|
@@ -61,11 +61,10 @@ data<12>            |    7.532(R)|   -3.241(R)|clock100_out_OBUF |   0.000|
 data<13>            |    7.546(R)|   -3.258(R)|clock100_out_OBUF |   0.000|
 data<14>            |    7.538(R)|   -3.248(R)|clock100_out_OBUF |   0.000|
 data<15>            |    7.552(R)|   -3.264(R)|clock100_out_OBUF |   0.000|
-flaga               |    7.544(R)|   -3.255(R)|clock100_out_OBUF |   0.000|
-flagb               |    7.538(R)|   -3.248(R)|clock100_out_OBUF |   0.000|
-slide_select_mode<0>|    7.541(R)|   -3.252(R)|clock100_out_OBUF |   0.000|
-slide_select_mode<1>|    7.523(R)|   -3.230(R)|clock100_out_OBUF |   0.000|
-slide_select_mode<2>|    7.531(R)|   -3.239(R)|clock100_out_OBUF |   0.000|
+flag                |    3.942(R)|   -2.102(R)|clock100_out_OBUF |   0.000|
+slide_select_mode<0>|    4.022(R)|   -2.168(R)|clock100_out_OBUF |   0.000|
+slide_select_mode<1>|    3.967(R)|   -2.124(R)|clock100_out_OBUF |   0.000|
+slide_select_mode<2>|    3.086(R)|   -1.406(R)|clock100_out_OBUF |   0.000|
 --------------------+------------+------------+------------------+--------+
 
 Clock clock50 to Pad
@@ -73,35 +72,35 @@ Clock clock50 to Pad
                      | clk (edge) |                  | Clock  |
 Destination          |   to PAD   |Internal Clock(s) | Phase  |
 ---------------------+------------+------------------+--------+
-address<0>           |    3.858(R)|clock100_out_OBUF |   0.000|
-address<1>           |    3.848(R)|clock100_out_OBUF |   0.000|
-data<0>              |    9.090(R)|clock100_out_OBUF |   0.000|
-data<1>              |    9.670(R)|clock100_out_OBUF |   0.000|
-data<2>              |   10.221(R)|clock100_out_OBUF |   0.000|
-data<3>              |   10.495(R)|clock100_out_OBUF |   0.000|
-data<4>              |    9.250(R)|clock100_out_OBUF |   0.000|
-data<5>              |    9.979(R)|clock100_out_OBUF |   0.000|
-data<6>              |   10.677(R)|clock100_out_OBUF |   0.000|
-data<7>              |    9.542(R)|clock100_out_OBUF |   0.000|
-data<8>              |    9.296(R)|clock100_out_OBUF |   0.000|
-data<9>              |   10.680(R)|clock100_out_OBUF |   0.000|
-data<10>             |    9.955(R)|clock100_out_OBUF |   0.000|
-data<11>             |   10.120(R)|clock100_out_OBUF |   0.000|
-data<12>             |   10.541(R)|clock100_out_OBUF |   0.000|
-data<13>             |    9.536(R)|clock100_out_OBUF |   0.000|
-data<14>             |    9.563(R)|clock100_out_OBUF |   0.000|
-data<15>             |   10.530(R)|clock100_out_OBUF |   0.000|
-lcd_data<0>          |    8.898(R)|lcd_clock50       |   0.000|
-lcd_data<1>          |    9.055(R)|lcd_clock50       |   0.000|
-lcd_data<2>          |    9.267(R)|lcd_clock50       |   0.000|
-lcd_data<3>          |    9.435(R)|lcd_clock50       |   0.000|
-lcd_e                |    8.872(R)|lcd_clock50       |   0.000|
-lcd_rs               |    9.901(R)|lcd_clock50       |   0.000|
-led_buffer_empty_show|    7.351(R)|clock100_out_OBUF |   0.000|
-slcs                 |    3.890(R)|clock100_out_OBUF |   0.000|
-sloe                 |    3.846(R)|clock100_out_OBUF |   0.000|
-slrd                 |    3.890(R)|clock100_out_OBUF |   0.000|
-slwr                 |    3.846(R)|clock100_out_OBUF |   0.000|
+address<0>           |    6.535(R)|clock100_out_OBUF |   0.000|
+address<1>           |    6.656(R)|clock100_out_OBUF |   0.000|
+data<0>              |   10.780(R)|clock100_out_OBUF |   0.000|
+data<1>              |   11.094(R)|clock100_out_OBUF |   0.000|
+data<2>              |   11.331(R)|clock100_out_OBUF |   0.000|
+data<3>              |   11.324(R)|clock100_out_OBUF |   0.000|
+data<4>              |   11.876(R)|clock100_out_OBUF |   0.000|
+data<5>              |   11.399(R)|clock100_out_OBUF |   0.000|
+data<6>              |   13.321(R)|clock100_out_OBUF |   0.000|
+data<7>              |   12.177(R)|clock100_out_OBUF |   0.000|
+data<8>              |   10.460(R)|clock100_out_OBUF |   0.000|
+data<9>              |   13.322(R)|clock100_out_OBUF |   0.000|
+data<10>             |   11.647(R)|clock100_out_OBUF |   0.000|
+data<11>             |   12.755(R)|clock100_out_OBUF |   0.000|
+data<12>             |   15.303(R)|clock100_out_OBUF |   0.000|
+data<13>             |   12.167(R)|clock100_out_OBUF |   0.000|
+data<14>             |   11.039(R)|clock100_out_OBUF |   0.000|
+data<15>             |   13.869(R)|clock100_out_OBUF |   0.000|
+lcd_data<0>          |   11.234(R)|lcd_clock50       |   0.000|
+lcd_data<1>          |   10.641(R)|lcd_clock50       |   0.000|
+lcd_data<2>          |    9.821(R)|lcd_clock50       |   0.000|
+lcd_data<3>          |   11.114(R)|lcd_clock50       |   0.000|
+lcd_e                |   11.553(R)|lcd_clock50       |   0.000|
+lcd_rs               |    9.361(R)|lcd_clock50       |   0.000|
+led_buffer_empty_show|    7.101(R)|clock100_out_OBUF |   0.000|
+slcs                 |    8.495(R)|clock100_out_OBUF |   0.000|
+sloe                 |    7.175(R)|clock100_out_OBUF |   0.000|
+slrd                 |    7.375(R)|clock100_out_OBUF |   0.000|
+slwr                 |    7.357(R)|clock100_out_OBUF |   0.000|
 ---------------------+------------+------------------+--------+
 
 Clock to Setup on destination clock clock50
@@ -109,7 +108,7 @@ Clock to Setup on destination clock clock50
                | Src:Rise| Src:Fall| Src:Rise| Src:Fall|
 Source Clock   |Dest:Rise|Dest:Rise|Dest:Fall|Dest:Fall|
 ---------------+---------+---------+---------+---------+
-clock50        |    9.284|         |         |         |
+clock50        |    9.275|         |         |         |
 ---------------+---------+---------+---------+---------+
 
 Pad to Pad
@@ -120,7 +119,7 @@ clock50        |clock100_out   |    4.328|
 ---------------+---------------+---------+
 
 
-Analysis completed Tue Jan 06 16:46:40 2015 
+Analysis completed Sun Jan 11 15:41:04 2015 
 --------------------------------------------------------------------------------
 
 Trace Settings:

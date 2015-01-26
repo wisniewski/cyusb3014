@@ -8,7 +8,19 @@
 <!-- Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.    -->
 
 <messages>
-<msg type="info" file="ProjectMgmt" num="1061" ><arg fmt="%s" index="1">Parsing VHDL file &quot;C:/Users/MariuszKomp/Desktop/Praca inzynierska/08 Oprogramowanie/2FLAGs/Spartan 3E/slave_fifo_loopback_2flags.vhd&quot; into library work</arg>
+<msg type="info" file="ProjectMgmt" num="1061" ><arg fmt="%s" index="1">Parsing VHDL file &quot;C:/Users/MariuszKomp/Desktop/Praca inzynierska/08 Oprogramowanie/1 FLAG/Spartan 3E/slave_fifo_lcd_controller_1flag.vhd&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1061" ><arg fmt="%s" index="1">Parsing VHDL file &quot;C:/Users/MariuszKomp/Desktop/Praca inzynierska/08 Oprogramowanie/1 FLAG/Spartan 3E/slave_fifo_loopback_1flag.vhd&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1061" ><arg fmt="%s" index="1">Parsing VHDL file &quot;C:/Users/MariuszKomp/Desktop/Praca inzynierska/08 Oprogramowanie/1 FLAG/Spartan 3E/slave_fifo_main_1flag.vhd&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1061" ><arg fmt="%s" index="1">Parsing VHDL file &quot;C:/Users/MariuszKomp/Desktop/Praca inzynierska/08 Oprogramowanie/1 FLAG/Spartan 3E/slave_fifo_stream_read_from_fx3_1flag.vhd&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1061" ><arg fmt="%s" index="1">Parsing VHDL file &quot;C:/Users/MariuszKomp/Desktop/Praca inzynierska/08 Oprogramowanie/1 FLAG/Spartan 3E/slave_fifo_stream_write_to_fx3_flag.vhd&quot; into library work</arg>
 </msg>
 
 </messages>
