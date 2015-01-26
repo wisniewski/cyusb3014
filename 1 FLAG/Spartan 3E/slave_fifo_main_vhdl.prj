@@ -1,7 +1,0 @@
-vhdl work "C:\Users\MariuszKomp\Desktop\Praca inzynierska\08 Oprogramowanie\1 FLAG\Spartan 3E\ipcore_dir\slave_fifo_buffer_1flag.vhd"
-vhdl work "C:\Users\MariuszKomp\Desktop\Praca inzynierska\08 Oprogramowanie\1 FLAG\Spartan 3E\slave_fifo_stream_write_to_fx3_flag.vhd"
-vhdl work "C:\Users\MariuszKomp\Desktop\Praca inzynierska\08 Oprogramowanie\1 FLAG\Spartan 3E\slave_fifo_stream_read_from_fx3_1flag.vhd"
-vhdl work "C:\Users\MariuszKomp\Desktop\Praca inzynierska\08 Oprogramowanie\1 FLAG\Spartan 3E\slave_fifo_loopback_1flag.vhd"
-vhdl work "C:\Users\MariuszKomp\Desktop\Praca inzynierska\08 Oprogramowanie\1 FLAG\Spartan 3E\slave_fifo_lcd_controller_1flag.vhd"
-vhdl work "C:\Users\MariuszKomp\Desktop\Praca inzynierska\08 Oprogramowanie\1 FLAG\Spartan 3E\slave_fifo_dcm_1flag.vhd"
-vhdl work "C:\Users\MariuszKomp\Desktop\Praca inzynierska\08 Oprogramowanie\1 FLAG\Spartan 3E\slave_fifo_main_1flag.vhd"

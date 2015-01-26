@@ -1,7 +1,0 @@
-vhdl work "ipcore_dir/slave_fifo_buffer_2flags.vhd"
-vhdl work "slave_fifo_stream_write_to_fx3_2flags.vhd"
-vhdl work "slave_fifo_stream_read_from_fx3_2flags.vhd"
-vhdl work "slave_fifo_loopback_2flags.vhd"
-vhdl work "slave_fifo_lcd_controller_2flags.vhd"
-vhdl work "slave_fifo_dcm_2flags.vhd"
-vhdl work "slave_fifo_main_2flags.vhd"
