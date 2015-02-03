@@ -193,7 +193,6 @@ void CyFxSlFifoPtoUDmaCallback(CyU3PDmaChannel *chHandle, CyU3PDmaCbType_t type,
 void CyFxSlFifoApplnStart(void)
 {
     uint16_t size = 0;
-    uint16_t burst_length = 0;
     CyU3PEpConfig_t epCfg;
     CyU3PDmaChannelConfig_t dmaCfg;
     CyU3PReturnStatus_t apiRetStatus = CY_U3P_SUCCESS;
@@ -207,17 +206,14 @@ void CyFxSlFifoApplnStart(void)
     {
     case CY_U3P_FULL_SPEED:
         size = 64;
-        burst_length = 1;
         break;
 
     case CY_U3P_HIGH_SPEED:
         size = 512;
-        burst_length = 1;
         break;
 
     case CY_U3P_SUPER_SPEED:
         size = 1024;
-        burst_length = 16; //edit
         break;
 
     default:
@@ -229,7 +225,7 @@ void CyFxSlFifoApplnStart(void)
     CyU3PMemSet((uint8_t *) &epCfg, 0, sizeof(epCfg));
     epCfg.enable = CyTrue;
     epCfg.epType = CY_U3P_USB_EP_BULK;
-    epCfg.burstLen = burst_length; //edit
+    epCfg.burstLen = BURST_LENGTH; //edit
     epCfg.streams = 0;
     epCfg.pcktSize = size;
 
