@@ -25,7 +25,7 @@ port
 	data_stream_out_to_show	: out std_logic_vector(DATA_BITS-1 downto 0);
 	sloe_stream_out : out std_logic;
 	slrd_stream_out : out std_logic;
-	start_transfer : out std_logic_vector(1 downto 0)
+	start_transfer : out std_logic
 ); end slave_fifo_stream_read_from_fx3;
 ----------------------------------------------------------------------------------
 -- Architecture
@@ -83,11 +83,9 @@ end process;
 process(clock100) begin
 	if (rising_edge(clock100)) then
 		if (data_get = "0101011101001101") then -- 0x574d
-			start_transfer <= "01";
-		elsif (data_get = "0100110101010111") then -- 0x4d57
-			start_transfer <= "10";
+			start_transfer <= '1';
 		else
-			start_transfer <= "00";
+			start_transfer <= '0';
 		end if;
 	end if;
 end process;

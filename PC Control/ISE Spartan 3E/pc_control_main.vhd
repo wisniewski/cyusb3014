@@ -133,7 +133,9 @@ signal data_stream_out_to_show : std_logic_vector(DATA_BIT-1 downto 0):="1111000
 signal sloe_stream_out : std_logic;
 signal slrd_stream_out : std_logic;
 
-signal start_transfer : std_logic_vector(1 downto 0):="00";
+signal start_transfer : std_logic:='0';
+signal stop_transfer : std_logic:='0';
+signal start_transfer2 : std_logic:='0';
 ----------------------------------------------------------------------------------
 -- Components
 ----------------------------------------------------------------------------------
@@ -166,10 +168,13 @@ component slave_fifo_stream_write_to_fx3 port
 	clock100 : in std_logic;
 	flaga_get : in std_logic;
 	flagb_get : in std_logic;
+	flagc_get : in std_logic;
+	flagd_get : in std_logic;
 	reset : in std_logic;
 	stream_in_mode_active : in std_logic;
 	slwr_stream_in : out std_logic;
-	data_stream_in : out std_logic_vector(DATA_BIT-1 downto 0)
+	data_stream_in : out std_logic_vector(DATA_BIT-1 downto 0);
+	stop_transfer : out std_logic
 ); end component;
 component slave_fifo_stream_read_from_fx3 port 
 (
@@ -182,7 +187,7 @@ component slave_fifo_stream_read_from_fx3 port
 	data_stream_out_to_show	: out std_logic_vector(DATA_BIT-1 downto 0);
 	sloe_stream_out 			: out std_logic;
 	slrd_stream_out 			: out std_logic;
-	start_transfer : out std_logic_vector(1 downto 0)
+	start_transfer : out std_logic
 ); end component;
 ----------------------------------------------------------------------------------
 -- Function: Convert std logic to string
@@ -236,10 +241,13 @@ inst_stream_write_to_fx3 : slave_fifo_stream_write_to_fx3 port map
 	clock100 => clock100,
 	flaga_get => flaga_get,
 	flagb_get => flagb_get,
+	flagc_get => flagc_get,
+	flagd_get => flagd_get,
 	reset => not reset_fpga,
 	stream_in_mode_active => stream_in_mode_active,
 	slwr_stream_in => slwr_stream_in,
-	data_stream_in => data_stream_in
+	data_stream_in => data_stream_in,
+	stop_transfer => stop_transfer
 );
 int_stream_read_from_fx3 : slave_fifo_stream_read_from_fx3 port map
 (
@@ -259,9 +267,9 @@ int_stream_read_from_fx3 : slave_fifo_stream_read_from_fx3 port map
 ----------------------------------------------------------------------------------
 clock100_out <= clock100;
 reset_fpga <= reset_from_slide;
-led_buffer_empty_show <= start_transfer(0);
+led_buffer_empty_show <= start_transfer2;
 lcd_srataflash_disable <= '1';
---reset_to_fx3 <= '1';
+reset_to_fx3 <= '1';
 pmode <= "11";
 pktend_get <= '1';
 ----------------------------------------------------------------------------------
@@ -410,11 +418,32 @@ process (clock100, reset_fpga) begin
         current_mode <= slide_select_mode;
         case current_state is
 			when stream_read_from_fx3_state =>
-            	lcd_text_line1 <= "FSM: STREAM OUT ";
-	            lcd_text_line2 <= vector_to_string(data_stream_out_to_show);
+            	if flagc_get = '1' then
+            	lcd_text_line1 <= "read fx flagc 11";
+            	else 
+            	lcd_text_line1 <= "read fx flagc 00";
+            	end if;
+            	
+            	if flagd_get = '1' then
+            	lcd_text_line2 <= "read fx flagd 11";
+            	else 
+            	lcd_text_line2 <= "read fx flagd 00";
+            	end if;
+            	--lcd_text_line1 <= "FSM: STREAM OUT ";
+	            --lcd_text_line2 <= vector_to_string(data_stream_out_to_show);
             when stream_write_to_fx3_state => 
-            	lcd_text_line1 <= "FSM: STREAM IN  ";
-	            lcd_text_line2 <= vector_to_string(data_stream_in);
+            	if flagc_get = '1' then
+            	lcd_text_line1 <= "wr flagc 11     ";
+            	else 
+            	lcd_text_line1 <= "wr flagc 00     ";
+            	end if;
+            	
+            	if flagd_get = '1' then
+            	lcd_text_line2 <= "wr flagd 11     ";
+            	else 
+            	lcd_text_line2 <= "wr flagd 00     ";
+            	end if;
+	            --lcd_text_line2 <= vector_to_string(data_stream_in);
             when others =>
             	lcd_text_line1 <= "FSM FPGA        ";
 	            lcd_text_line2 <= "MODE: IDLE STATE"; 
@@ -424,43 +453,26 @@ end process;
 ----------------------------------------------------------------------------------
 -- FPGA State Machine
 ----------------------------------------------------------------------------------
-process(current_state, start_transfer)
-	variable counter : integer range 0 to 510000000 := 1;
-	variable abc : std_logic:='0';
-begin
+process(current_state, start_transfer) begin
 if(rising_edge(clock100)) then
    	next_state <= current_state;
     case current_state is
         when idle_state =>
-        	reset_to_fx3 <= '0';
-        	counter := 1;
+        	start_transfer2 <= '0';
         	next_state <= stream_read_from_fx3_state;
         when stream_read_from_fx3_state =>
-        if counter = 50000 then
-        	if start_transfer = "01" and abc = '0' then --start
-        		counter := 1;
-        		abc := '1';
-        		next_state <= stream_write_to_fx3_state;
-        	elsif start_transfer = "10" and abc = '1' then --stop
-        		counter := 1;
-        		abc := '0';
-        		next_state <= idle_state;
-        	elsif abc = '1' then
-        		counter := 1;
+        	if start_transfer = '1' then
+        		start_transfer2 <= '1';
         		next_state <= stream_write_to_fx3_state;
         	end if;
-        elsif counter > 50001 then
-        	counter := 1;
-        end if;
         when stream_write_to_fx3_state =>
-        	if counter = 500000000 and slwr_get = '1' then --5s
+        	if stop_transfer = '1' then 
         		next_state <= idle_state;
-        		counter := 1;
+        		start_transfer2 <= '0';
         	end if;
         when others => 
             next_state <= idle_state;
     end case;
-    counter := counter + 1;
 end if;
 end process;
 ----------------------------------------------------------------------------------

@@ -19,10 +19,13 @@ port
 	clock100 : in std_logic;
 	flaga_get : in std_logic;
 	flagb_get : in std_logic;
+	flagc_get : in std_logic;
+	flagd_get : in std_logic;
 	reset : in std_logic;
 	stream_in_mode_active : in std_logic;
 	slwr_stream_in : out std_logic;
-	data_stream_in : out std_logic_vector(DATA_BITS-1 downto 0)
+	data_stream_in : out std_logic_vector(DATA_BITS-1 downto 0);
+	stop_transfer : out std_logic
 ); end slave_fifo_stream_write_to_fx3;
 ----------------------------------------------------------------------------------
 -- Architecture
@@ -36,6 +39,7 @@ constant DATA_BIT : natural := 16;
 -- Signals
 ----------------------------------------------------------------------------------
 signal slwr_stream_in_get : std_logic;
+signal stop_transfer_tmp : std_logic;
 signal data_stream_in_get : std_logic_vector(DATA_BIT-1 downto 0);
 ----------------------------------------------------------------------------------
 -- Stream Write to FX3 Finished State Machine
@@ -57,6 +61,7 @@ begin
 ----------------------------------------------------------------------------------
 slwr_stream_in <= slwr_stream_in_get;
 data_stream_in <= data_stream_in_get; 
+stop_transfer <= stop_transfer_tmp;
 ----------------------------------------------------------------------------------
 -- Stream Write to FX3 State Change
 ----------------------------------------------------------------------------------
@@ -120,6 +125,16 @@ process(current_state, flaga_get, flagb_get, stream_in_mode_active) begin
 		when others =>
 			next_state <= stream_in_idle;
 	end case;
+end process;
+------
+process(flagc_get, flagd_get) begin
+if (flagc_get = '1') and (stream_in_mode_active = '1') and flagd_get = '1' then
+
+		stop_transfer_tmp <= '1';
+	else 
+		stop_transfer_tmp <= '0';
+
+end if;
 end process;
 ----------------------------------------------------------------------------------
 -- End Architecture
